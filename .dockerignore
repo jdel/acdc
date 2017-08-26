@@ -1,0 +1,7 @@
+tmp
+vendor
+cachestatic
+.vscode
+gin-bin
+debug
+acdc
