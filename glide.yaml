@@ -1,18 +1,28 @@
 package: github.com/jdel/acdc
 import:
+- package: github.com/docker/libcompose
+  subpackages:
+  - docker
+  - docker/ctx
+  - logger
+  - project
+  - project/options
+- package: golang.org/x/crypto
+  subpackages:
+  - pkcs12
+  version: master
 - package: github.com/fsnotify/fsnotify
-  version: ~1.4.2
 - package: github.com/gorilla/mux
-  version: ~1.4.0
 - package: github.com/sirupsen/logrus
-  version: ~1.0.3
+  version: master
 - package: github.com/Sirupsen/logrus
   repo: git@github.com:/sirupsen/logrus
   vcs: git
-  version: ~1.0.3
+  version: master
 - package: github.com/spf13/cobra
 - package: github.com/spf13/viper
+- package: golang.org/x/net
+  subpackages:
+  - context
+- package: gopkg.in/src-d/go-git.v4
 - package: gopkg.in/yaml.v2
-- package: github.com/dchest/uniuri
-- package: github.com/src-d/go-git
-- package: github.com/docker/libcompose
