@@ -13,11 +13,11 @@ import:
   version: master
 - package: github.com/fsnotify/fsnotify
 - package: github.com/gorilla/mux
-- package: github.com/sirupsen/logrus
-  version: master
 - package: github.com/Sirupsen/logrus
   repo: git@github.com:/sirupsen/logrus
   vcs: git
+  version: master
+- package: github.com/sirupsen/logrus
   version: master
 - package: github.com/spf13/cobra
 - package: github.com/spf13/viper
