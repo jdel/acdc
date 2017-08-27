@@ -1,8 +1,10 @@
-hash: 7bcaa05212cb49ae567ea2c20a78d81168228f242f12da0b18464f8b8f4b8e57
-updated: 2017-08-19T12:11:32.874701318+02:00
+hash: 9ee7cf063d7e719068357ed84e06d4473a288e53519bc39eda78281891143aef
+updated: 2017-08-27T00:09:09.573001375+02:00
 imports:
 - name: github.com/dchest/uniuri
   version: 8902c56451e9b58ff940bbe5fec35d5f9c04584a
+- name: github.com/docker/libcompose
+  version: 1b708aac26a4fc6f9bff31728a8e3a252ef57dbd
 - name: github.com/fsnotify/fsnotify
   version: 629574ca2a5df945712d3079857300b5e4da0236
 - name: github.com/gorilla/context

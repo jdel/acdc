@@ -22,7 +22,7 @@ func RouteHookUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		output, err := hook.Up().CombinedOutput()
+		output, err := hook.NewUp()
 		if err != nil {
 			logRoute.WithField("key", apiKey).Error(err)
 			jsonOutput(w, http.StatusInternalServerError,

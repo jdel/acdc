@@ -11,3 +11,4 @@ import:
 - package: gopkg.in/yaml.v2
 - package: github.com/dchest/uniuri
 - package: github.com/src-d/go-git
+- package: github.com/docker/libcompose

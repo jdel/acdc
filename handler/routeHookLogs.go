@@ -15,7 +15,8 @@ func RouteHookLogs(w http.ResponseWriter, r *http.Request) {
 		key := api.FindKey(apiKey)
 		hook := key.GetHook(mux.Vars(r)["hookName"])
 
-		output, err := hook.Logs().CombinedOutput()
+		// output2, _ := hook.Logs().CombinedOutput()
+		output, err := hook.NewLogs()
 		if err != nil {
 			logRoute.Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
@@ -24,6 +25,6 @@ func RouteHookLogs(w http.ResponseWriter, r *http.Request) {
 		}
 
 		jsonOutput(w, http.StatusOK,
-			outputHook(string(output), hook.Name))
+			outputHook(output, hook.Name))
 	}
 }
