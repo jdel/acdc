@@ -4,20 +4,12 @@ go:
 install:
 - go get -v github.com/Masterminds/glide
 - cd $GOPATH/src/github.com/Masterminds/glide && git checkout tags/v0.12.3 && go install && cd -
-- glide install -v
+- glide install -v --force
 script:
 - go get github.com/mitchellh/gox
 - gox -osarch="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64
   windows/386" -output="out/{{.Dir}}-{{.OS}}-{{.Arch}}" -ldflags "-X github.com/jdel/acdc/cfg.Version=$TRAVIS_TAG"
 deploy:
-- provider: bintray
-  file: .bintray.json
-  user: jdel
-  key:
-    secure: n9tzMFM/yMSL9l3ZKp0ge4imUmvNZIK6AgeKHsyvbSXXIDcLaG6s5S7DR0/AYoQRRIAcVk2ougWnyOChRgjTdG3/jDMb+a+0bx0PoyvVtAVdbJ6/RgKb+0VIiGp/b1oia4fUkJg90uk1fUsdnAsDBqme1rUcE/UahBZwvPLJxr9eMsjRqBP5+uBvdrWTDAbhiIG/OzW+kQC9CYNalBiuiLwYwwucvVZaHIp3St5qYWYIK6b15E99hH5N+v39/shMiHGhiUdL6llHJaWRA2vvBEOqwc8C39euPDMwA+46+ow3QxYlfzonbiYisvHhBOLDRSK39c8TkvaNbzov9x4ziNvnQ3LPiHtxbWyVmXHfs+KSiL5K4D6ILRPHunqUg6IvdYsH0DnXMWp4N5Xo54PgpvqXe4ai4p1oaF4T0VowDBk80Y7+pr1hZkvpFlHRUvxBHudSbSBVuHLTnCF4/wEXXs2MynwFB741QReaOzbVCl5CT4Yu7l3HuYj5yGhQIyF9Wa0E4Z49iUIQAPZIKaVHcLbtZcxS64tFBG0ES9ogwAbSyuBPjsGaHLkvXQnB3m/h13uzqaU6JTYa1UQzQP9Eb56Am8LpKAKaSIjX9gHNz5CFGYYFr5uJqLmth+n/hBosGbiB9qV9XNQoDlQtytAFf/u0Ia/aW4CgKHo+tBzDSCk=
-  on:
-    repo: jdel/acdc
-    branch: master
 - provider: releases
   overwrite: true
   api_key:
