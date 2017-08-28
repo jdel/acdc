@@ -1,5 +1,5 @@
-hash: 36c5b64ebeaf1a0bf42cf5836f9eb554413dcf454da78f5c776cf42518b49700
-updated: 2017-08-27T21:11:46.062205178+02:00
+hash: 921e11bbb8363daa42356a20543410d56523a605a392d861c35663191fc3e63d
+updated: 2017-08-28T12:29:04.922130897+02:00
 imports:
 - name: github.com/Azure/go-ansiterm
   version: 19f72df4d05d31cbe1c56bfc8045c96babff6c7e
@@ -28,7 +28,7 @@ imports:
   - signer
   - signer/local
 - name: github.com/coreos/etcd
-  version: fec145f08669a2118c09995f8fe256216458c727
+  version: 9b92e1b2d0d3a86394b2329c9cad825c867f8197
   subpackages:
   - raft/raftpb
 - name: github.com/docker/cli
@@ -53,7 +53,7 @@ imports:
   - registry/storage/cache
   - registry/storage/cache/memory
 - name: github.com/docker/docker
-  version: 6ed5db6243243c8b7ee3ff165f21bda4465124e5
+  version: a63a2e84d8613cd6a666cafcd3d521fc0df46706
   subpackages:
   - api
   - api/types
@@ -175,7 +175,7 @@ imports:
 - name: github.com/flynn/go-shlex
   version: 3f9db97f856818214da2e1057f8ad84803971cff
 - name: github.com/fsnotify/fsnotify
-  version: 4da3e2cfbabc9f751898f250b49f2439785783a1
+  version: 629574ca2a5df945712d3079857300b5e4da0236
 - name: github.com/gogo/protobuf
   version: 100ba4e885062801d56799d78530b73b178a78f3
   subpackages:
@@ -281,12 +281,12 @@ imports:
   version: feef008d51ad2b3778f85d387ccf91735543008d
   subpackages:
   - diffmatchpatch
-- name: github.com/sirupsen/logrus
-  version: 89742aefa4b206dcf400792f3bd35b542998eb3b
 - name: github.com/Sirupsen/logrus
-  version: 89742aefa4b206dcf400792f3bd35b542998eb3b
-  repo: git@github.com:/sirupsen/logrus
+  version: f006c2ac4710855cf0f916dd6b77acf6b048dc6e
+  repo: https://github.com/sirupsen/logrus
   vcs: git
+- name: github.com/sirupsen/logrus
+  version: f006c2ac4710855cf0f916dd6b77acf6b048dc6e
 - name: github.com/spf13/afero
   version: 36f8810e2e3d7eeac4ac05b57f65690fbfba62a2
   subpackages:
