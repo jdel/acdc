@@ -1,4 +1,4 @@
-package handler
+package v1
 
 import (
 	"net/http"
@@ -17,7 +17,7 @@ func RouteAPIKeyDelete(w http.ResponseWriter, r *http.Request) {
 		key := api.FindKey(apiKey)
 		err := key.Delete()
 		if err != nil {
-			logRoute.Error(err)
+			logRoute.WithField("route", "RouteAPIKeyDelete").Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
 				outputKey("Could not delete key", key.Unique))
 			return

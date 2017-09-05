@@ -1,4 +1,4 @@
-package handler
+package v1
 
 import (
 	"net/http"
@@ -13,7 +13,7 @@ func RouteAPIKeyList(w http.ResponseWriter, r *http.Request) {
 	if authOK == true {
 		keys, err := api.AllAPIKeys()
 		if err != nil {
-			logRoute.Error(err)
+			logRoute.WithField("route", "RouteAPIKeyList").Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
 				outputKey("Could find keys", ""))
 			return

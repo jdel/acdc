@@ -19,6 +19,7 @@ func NewRouter() *mux.Router {
 	for _, route := range appRoutes {
 		router.
 			Methods(route.Method).
+			PathPrefix(route.PathPrefix).
 			Path(route.Pattern).
 			Name(route.Name).
 			Handler(lgr.Wrapper(route.HandlerFunc, route.Name))

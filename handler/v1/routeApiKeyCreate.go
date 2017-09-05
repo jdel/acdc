@@ -1,4 +1,4 @@
-package handler
+package v1
 
 import (
 	"net/http"
@@ -13,7 +13,7 @@ func RouteAPIKeyCreate(w http.ResponseWriter, r *http.Request) {
 	if authOK == true {
 		key, err := api.NewKey("", r.FormValue("remote"))
 		if err != nil {
-			logRoute.Error(err)
+			logRoute.WithField("route", "RouteAPIKeyCreate").Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
 				outputKey("Could not create key", key.Unique))
 			return

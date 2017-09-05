@@ -1,4 +1,4 @@
-package handler
+package v1
 
 import (
 	"net/http"
@@ -7,22 +7,19 @@ import (
 	"github.com/jdel/acdc/api"
 )
 
-// RouteHookStart executes docker-compose start on the specified hook
-func RouteHookStart(w http.ResponseWriter, r *http.Request) {
+// RouteHookPull executes docker-compose start on the specified hook
+func RouteHookPull(w http.ResponseWriter, r *http.Request) {
 	apiKey, authOK := api.BasicAuth(w, r)
 
 	if authOK == true {
 		key := api.FindKey(apiKey)
 		hook := key.GetHook(mux.Vars(r)["hookName"])
 
-		output, err := hook.Start().CombinedOutput()
+		output, err := hook.Pull().CombinedOutput()
 		if err != nil {
-			logRoute.Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
-				outputHook("Could not start hook", hook.Name))
-			return
+				outputHook("Could not pull images for hook", hook.Name))
 		}
-
 		jsonOutput(w, http.StatusOK,
 			outputHook(string(output), hook.Name))
 	}

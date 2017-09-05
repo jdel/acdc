@@ -299,6 +299,18 @@ type githubPayload struct {
 	} `json:"sender"`
 }
 
+type githubCallbackPayload struct {
+	Message string `json:"message"`
+	Context string `json:"context,omitempty"`
+}
+
+func outputGithubPayload(message, context string) githubCallbackPayload {
+	return githubCallbackPayload{
+		Message: message,
+		Context: context,
+	}
+}
+
 func checkMAC(message, messageMAC, key []byte) bool {
 	mac := hmac.New(sha256.New, key)
 	mac.Write(message)
@@ -333,7 +345,7 @@ func RouteGithub(w http.ResponseWriter, r *http.Request) {
 
 	if !checkMAC(body, []byte(r.Header.Get("X-Hub-Signature")), []byte("cakecakecake")) {
 		jsonOutput(w, http.StatusOK,
-			outputKey("Invalid signature", ""))
+			outputGithubPayload("Invalid signature", ""))
 		return
 	}
 
@@ -381,5 +393,5 @@ func RouteGithub(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	jsonOutput(w, http.StatusOK,
-		outputHook(string(output), ""))
+		outputGithubPayload(string(output), ""))
 }

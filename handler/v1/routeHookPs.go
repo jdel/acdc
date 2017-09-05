@@ -1,4 +1,4 @@
-package handler
+package v1
 
 import (
 	"net/http"
@@ -7,20 +7,19 @@ import (
 	"github.com/jdel/acdc/api"
 )
 
-// RouteHookStop executes docker-compose start on the specified hook
-func RouteHookStop(w http.ResponseWriter, r *http.Request) {
+// RouteHookPs executes docker-compose ps hookName
+func RouteHookPs(w http.ResponseWriter, r *http.Request) {
 	apiKey, authOK := api.BasicAuth(w, r)
 
 	if authOK == true {
 		key := api.FindKey(apiKey)
 		hook := key.GetHook(mux.Vars(r)["hookName"])
 
-		output, err := hook.Stop().CombinedOutput()
+		output, err := hook.Ps().CombinedOutput()
 		if err != nil {
-			logRoute.Error(err)
+			logRoute.WithField("route", "RouteHookPs").Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
-				outputHook("Could not stop hook", hook.Name))
-			return
+				outputHook("Could not get hook", hook.Name))
 		}
 
 		jsonOutput(w, http.StatusOK,

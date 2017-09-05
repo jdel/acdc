@@ -1,4 +1,4 @@
-package handler
+package v1
 
 import (
 	"net/http"
@@ -17,7 +17,7 @@ func RouteHookRestart(w http.ResponseWriter, r *http.Request) {
 
 		output, err := hook.Restart().CombinedOutput()
 		if err != nil {
-			logRoute.Error(err)
+			logRoute.WithField("route", "RouteHookRestart").Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
 				outputHook("Could not restart hook", hook.Name))
 			return

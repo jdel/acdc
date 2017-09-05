@@ -75,7 +75,9 @@ func FindKey(unique string) Key {
 	if err == nil {
 		origin, err := remote.Remote("origin")
 		if err == nil {
-			apiKey.Remote = origin.Config().URL
+			if URLs := origin.Config().URLs; len(URLs) > 0 {
+				apiKey.Remote = URLs[0]
+			}
 		}
 	}
 
@@ -207,8 +209,6 @@ func AllAPIKeys() (map[string]Key, error) {
 		childName := child.Name()
 		if child.Mode().IsDir() {
 			keys[childName] = FindKey(childName)
-		} else {
-			logAPI.Debug("Ignoring regular file ", childName)
 		}
 
 	}

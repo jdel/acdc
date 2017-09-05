@@ -1,4 +1,4 @@
-package handler
+package v1
 
 import (
 	"fmt"
@@ -30,7 +30,7 @@ func RouteHookCreate(w http.ResponseWriter, r *http.Request) {
 
 		inFile, handler, err := r.FormFile("compose")
 		if err != nil {
-			logRoute.Error(err)
+			logRoute.WithField("route", "RouteHookCreate").Error(err)
 			jsonOutput(w, http.StatusUnprocessableEntity,
 				outputHook("Corrupted file", paramHookName))
 			return
@@ -41,7 +41,7 @@ func RouteHookCreate(w http.ResponseWriter, r *http.Request) {
 
 		outFile, err := os.OpenFile(fmt.Sprintf("%s.yml", filepath.Join(cfg.GetComposeDir(), apiKey, paramHookName)), os.O_WRONLY|os.O_CREATE, 0644)
 		if err != nil {
-			logRoute.Error(err)
+			logRoute.WithField("route", "RouteHookCreate").Error(err)
 			jsonOutput(w, http.StatusUnprocessableEntity,
 				outputHook("Could not create hook", paramHookName))
 			return

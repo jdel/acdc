@@ -36,6 +36,18 @@ type dockerHubPayload struct {
 	} `json:"repository"`
 }
 
+type dockerHubCallbackPayload struct {
+	Message string `json:"message"`
+	Context string `json:"context,omitempty"`
+}
+
+func outputDockerHubPayload(message, context string) dockerHubCallbackPayload {
+	return dockerHubCallbackPayload{
+		Message: message,
+		Context: context,
+	}
+}
+
 // RouteDockerHub handles incoming docker hub hooks
 func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	var output []byte
@@ -46,7 +58,7 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	key := api.FindKey(apiKey)
 	if key.Unique == "" {
 		jsonOutput(w, http.StatusInternalServerError,
-			outputKey("Could not get key", apiKey))
+			outputDockerHubPayload("Could not get key", apiKey))
 		return
 	}
 
@@ -54,7 +66,7 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 
 	err := decoder.Decode(&incomingPayload)
 	if err != nil {
-		logRoute.Error(err)
+		logRoute.WithField("route", "RouteDockerHub").Error(err)
 	}
 	defer r.Body.Close()
 
@@ -68,28 +80,28 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 
 	output, err = hook.Pull().CombinedOutput()
 	if err != nil {
-		logRoute.Error(string(output), err)
+		logRoute.WithField("route", "RouteDockerHub").Error(string(output), err)
 		jsonOutput(w, http.StatusInternalServerError,
-			outputHook("Could not pull images for hook", hook.Name))
+			outputDockerHubPayload("Could not pull images for hook", hook.Name))
 		return
 	}
 
 	output, err = hook.Down().CombinedOutput()
 	if err != nil {
-		logRoute.Error(string(output), err)
+		logRoute.WithField("route", "RouteDockerHub").Error(string(output), err)
 		jsonOutput(w, http.StatusInternalServerError,
-			outputHook("Could not bring hook down", hook.Name))
+			outputDockerHubPayload("Could not bring hook down", hook.Name))
 		return
 	}
 
 	output, err = hook.Up().CombinedOutput()
 	if err != nil {
-		logRoute.Error(string(output), err)
+		logRoute.WithField("route", "RouteDockerHub").Error(string(output), err)
 		jsonOutput(w, http.StatusInternalServerError,
-			outputHook("Could not bring hook up", hook.Name))
+			outputDockerHubPayload("Could not bring hook up", hook.Name))
 		return
 	}
 
 	jsonOutput(w, http.StatusOK,
-		outputHook("Upgraded hook", hook.Name))
+		outputDockerHubPayload("Upgraded hook", hook.Name))
 }

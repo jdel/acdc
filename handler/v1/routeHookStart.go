@@ -1,4 +1,4 @@
-package handler
+package v1
 
 import (
 	"net/http"
@@ -7,19 +7,19 @@ import (
 	"github.com/jdel/acdc/api"
 )
 
-// RouteHookLogs executes docker-compose logs on the specified hook
-func RouteHookLogs(w http.ResponseWriter, r *http.Request) {
+// RouteHookStart executes docker-compose start on the specified hook
+func RouteHookStart(w http.ResponseWriter, r *http.Request) {
 	apiKey, authOK := api.BasicAuth(w, r)
 
 	if authOK == true {
 		key := api.FindKey(apiKey)
 		hook := key.GetHook(mux.Vars(r)["hookName"])
 
-		output, err := hook.Logs().CombinedOutput()
+		output, err := hook.Start().CombinedOutput()
 		if err != nil {
-			logRoute.Error(err)
+			logRoute.WithField("route", "RouteHookStart").Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
-				outputHook("Could not get logs for hook", hook.Name))
+				outputHook("Could not start hook", hook.Name))
 			return
 		}
 

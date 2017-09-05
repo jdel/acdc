@@ -1,4 +1,4 @@
-FROM alpine:3.6
+FROM jdel/alpine:3.6
 
 ENV GOPATH=/go
 ENV PATH=${GOPATH}/bin:${PATH}
@@ -9,6 +9,8 @@ ARG ACDC_VERSION=${ACDC_VERSION:-master}
 ARG ACDC_COMMIT=
 
 LABEL maintainer=julien@del-piccolo.com
+
+USER root
 
 RUN apk add --update curl \
  # Install glibc on Alpine (required by docker-compose) from
@@ -23,7 +25,7 @@ RUN apk add --update curl \
  && rm glibc.apk glibc-bin.apk \
  && apk add --virtual build-dependencies go gcc build-base glide git openssh-client \
  && adduser acdc -D \
- && chown -R acdc:acdc /tmp /home/acdc \
+ && chown -R acdc:acdc /tmp /home/user \
  && curl -sL https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz -o docker.tgz \
  && tar xfvz docker.tgz --strip 1 -C /usr/local/bin/ docker/docker \
  && rm -f docker.tgz \
@@ -42,12 +44,12 @@ RUN apk add --update curl \
  && rm -rf /root/.glide/ \
  && rm -rf ${GOPATH}
  
-USER acdc
+USER user
 
-WORKDIR /home/acdc/
+WORKDIR /home/user/
 
 EXPOSE 8080
 
-VOLUME ["/tmp/", "/home/acdc/acdc"]
+VOLUME ["/tmp/", "/home/user/acdc"]
  
 CMD ["/usr/local/bin/acdc"]

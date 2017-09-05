@@ -74,7 +74,7 @@ func RouteSlack(w http.ResponseWriter, r *http.Request) {
 	case "up":
 		output, err = hook.Up().CombinedOutput()
 		if err != nil {
-			logRoute.Error(hook.Up(), err)
+			logRoute.WithField("route", "RouteSlack").Error(hook.Up(), err)
 			jsonOutput(w, http.StatusOK,
 				slackCallbackPayload("Could not bring hook up", hook.Name))
 			return
@@ -95,7 +95,7 @@ func RouteSlack(w http.ResponseWriter, r *http.Request) {
 		}
 		output, err = hook.Up().CombinedOutput()
 		if err != nil {
-			logRoute.Error(hook.Up(), err)
+			logRoute.WithField("route", "RouteSlack").Error(hook.Up(), err)
 			jsonOutput(w, http.StatusOK,
 				slackCallbackPayload("Could not bring hook up", hook.Name))
 			return

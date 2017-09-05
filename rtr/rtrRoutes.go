@@ -4,11 +4,13 @@ import (
 	"net/http"
 
 	"github.com/jdel/acdc/handler"
+	"github.com/jdel/acdc/handler/v1"
 )
 
 type route struct {
 	Name        string
 	Method      string
+	PathPrefix  string
 	Pattern     string
 	HandlerFunc http.HandlerFunc
 }
@@ -44,91 +46,106 @@ var appRoutes = routes{
 	route{
 		Name:        "APIKeyCreate",
 		Method:      "POST",
+		PathPrefix:  "/v1",
 		Pattern:     "/key/new",
-		HandlerFunc: handler.RouteAPIKeyCreate,
+		HandlerFunc: v1.RouteAPIKeyCreate,
 	},
 	route{
 		Name:        "APIKeyPull",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/key/pull",
-		HandlerFunc: handler.RouteAPIKeyPull,
+		HandlerFunc: v1.RouteAPIKeyPull,
 	},
 	route{
 		Name:        "APIKeyDelete",
 		Method:      "DELETE",
+		PathPrefix:  "/v1",
 		Pattern:     "/key/{apiKey}",
-		HandlerFunc: handler.RouteAPIKeyDelete,
+		HandlerFunc: v1.RouteAPIKeyDelete,
 	},
 	route{
-		Name:        "APIKeyLise",
+		Name:        "APIKeyList",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/key",
-		HandlerFunc: handler.RouteAPIKeyList,
+		HandlerFunc: v1.RouteAPIKeyList,
 	},
 	route{
 		Name:        "HookUp",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}/up",
-		HandlerFunc: handler.RouteHookUp,
+		HandlerFunc: v1.RouteHookUp,
 	},
 	route{
 		Name:        "HookDown",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}/down",
-		HandlerFunc: handler.RouteHookDown,
+		HandlerFunc: v1.RouteHookDown,
 	},
 	route{
 		Name:        "HookStart",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}/start",
-		HandlerFunc: handler.RouteHookStart,
+		HandlerFunc: v1.RouteHookStart,
 	},
 	route{
 		Name:        "HookStop",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}/stop",
-		HandlerFunc: handler.RouteHookStop,
+		HandlerFunc: v1.RouteHookStop,
 	},
 	route{
 		Name:        "HookRestart",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}/restart",
-		HandlerFunc: handler.RouteHookRestart,
+		HandlerFunc: v1.RouteHookRestart,
 	},
 	route{
 		Name:        "HookLogs",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}/logs",
-		HandlerFunc: handler.RouteHookLogs,
+		HandlerFunc: v1.RouteHookLogs,
 	},
 	route{
 		Name:        "HookPull",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}/pull",
-		HandlerFunc: handler.RouteHookPull,
+		HandlerFunc: v1.RouteHookPull,
 	},
 	route{
 		Name:        "HookPs",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}",
-		HandlerFunc: handler.RouteHookPs,
+		HandlerFunc: v1.RouteHookPs,
 	},
 	route{
 		Name:        "HookCreate",
 		Method:      "POST",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}",
-		HandlerFunc: handler.RouteHookCreate,
+		HandlerFunc: v1.RouteHookCreate,
 	},
 	route{
 		Name:        "HookDelete",
 		Method:      "DELETE",
+		PathPrefix:  "/v1",
 		Pattern:     "/{hookName}",
-		HandlerFunc: handler.RouteHookDelete,
+		HandlerFunc: v1.RouteHookDelete,
 	},
 	route{
 		Name:        "HookAll",
 		Method:      "GET",
+		PathPrefix:  "/v1",
 		Pattern:     "/",
-		HandlerFunc: handler.RouteHookGet,
+		HandlerFunc: v1.RouteHookGet,
 	},
 }
