@@ -38,6 +38,8 @@ RUN apk add --update curl \
  && go build -o /usr/local/bin/acdc -ldflags "-X github.com/jdel/acdc/cfg.Version=${ACDC_VERSION}-${ACDC_COMMIT}" \
  && chmod 755 /usr/local/bin/docker /usr/local/bin/docker-compose /usr/local/bin/acdc \
  && apk del build-dependencies \
+ && mkdir /home/user/acdc \
+ && chown user:user /home/user/acdc \
  && rm -rf /var/cache/apk/* \
  && rm -rf /root/.glide/ \
  && rm -rf ${GOPATH}
