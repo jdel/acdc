@@ -23,8 +23,8 @@ var logCmd = log.WithFields(log.Fields{
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "acdc",
-	Short: "Does this and that.",
-	Long:  `Does this and that better than others.`,
+	Short: "A Continuous Docker Compose.",
+	Long:  `A Continuous Docker Compose provides a docker-compose REST API and hooks for Slack, Docker Hub, Github and more.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Listening on", cfg.GetPort())
 		router := rtr.NewRouter()

@@ -1,6 +1,7 @@
 language: go
 go:
 - 1.8
+- 1.9
 install:
 - go get -v github.com/Masterminds/glide
 - cd $GOPATH/src/github.com/Masterminds/glide && git checkout tags/v0.12.3 && go install && cd -
@@ -34,3 +35,6 @@ deploy:
   on:
     repo: jdel/acdc
     tags: true
+notifications:
+  slack:
+    secure: eAEEMIGZNxmFoBcUi8Mi21HOeSyS8PhmByzsWxvL8p9Q2uIIAVQfgB3ozUGRWO1/rpXQveCRRx8LEow2YWt/yr1FWBdWXSh2yinB22c5jc7nayThTLK5HIy9KUpRAfEldx/iIudfveBSrw+jHFzvCrNobKuj85bUEExtU3Ro8hs1CsQ09B8laNSuMOqVWBrFKnmqJHATHpRWRL9ILSI1tv/VtclNlrAYGmH7ezgaHkBzsBJr9GbwQHmKNw+OxXuKHs1k9x8mXYkJrJfZIfiupLDyINo+JhVuDDkZdG6M02MlTZsu1YNecuqA8MVMmkI/YhY+snzONZccVNpar0ApE8jDwp5NyasDYDOqFALRNG1FLgPClWnSMOchNYG0SrOlzwN114Pn6E/pKxUu7ncaId/Uhp/vjgYoIVdYMyIcRUJNEC/j43dI/d+EgE+XLN+bSn6J+9JL90M78cHHX8Acjq8kasu/uGwSPig6k7xnUHTfXHGj7+zudComAVgzsFJdgw6fyb5AJ30aQDGVPCB7PgVMZooQVW0Jdh+omFKrNd2rm3Hs/soGrFvJYSWJVlBwMJ4Xp8tDhUsLsHQ/yrrGqmxfNAptqdVzN6SdEfIX7S8XCppdS1+u/jU0sTXjibX2IqNTWdEKYjoOnMAPtwkaOOzzIYSSCe/HtymlJDGd5a0=

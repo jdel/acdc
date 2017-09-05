@@ -37,7 +37,7 @@ var logConfig = log.WithFields(log.Fields{
 func InitConfig(cfgFile string, homeDir string) {
 	var err error
 
-	// Set logLevel ASAP
+	// Set logLevel ASAP in case we get it from the command line
 	logLevel := parseLogLevel(GetLogLevel())
 	log.SetLevel(logLevel)
 
@@ -87,6 +87,10 @@ func InitConfig(cfgFile string, homeDir string) {
 			logConfig.Error(err)
 		}
 	}
+
+	// Reset logLevel once we read the config
+	logLevel = parseLogLevel(GetLogLevel())
+	log.SetLevel(logLevel)
 
 	logConfig.Info("Using config file: ", viper.ConfigFileUsed())
 	logConfig.Info("Home is: ", appHome)

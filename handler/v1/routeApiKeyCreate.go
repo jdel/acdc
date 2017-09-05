@@ -11,7 +11,7 @@ func RouteAPIKeyCreate(w http.ResponseWriter, r *http.Request) {
 	authOK := api.BasicAuthMaster(w, r)
 
 	if authOK == true {
-		key, err := api.NewKey("", r.FormValue("remote"))
+		key, err := api.NewKey(r.FormValue("unique"), r.FormValue("remote"))
 		if err != nil {
 			logRoute.WithField("route", "RouteAPIKeyCreate").Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
