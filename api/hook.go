@@ -46,7 +46,6 @@ func (hook Hook) Up() *exec.Cmd {
 		append(hook.composeCommonArgs(),
 			"up",
 			"-d",
-			"--remove-orphans",
 		)...,
 	)
 }
@@ -56,7 +55,6 @@ func (hook Hook) Down() *exec.Cmd {
 	return exec.Command(cfg.DockerComposePath,
 		append(hook.composeCommonArgs(),
 			"down",
-			"--remove-orphans",
 		)...,
 	)
 }
@@ -117,6 +115,6 @@ func (hook Hook) composeCommonArgs() []string {
 		"-f",
 		fmt.Sprintf("%s.yml", hook.FileName),
 		"-p",
-		fmt.Sprintf("%s%s", hook.APIKey, hook.Name),
+		hook.APIKey,
 	}
 }
