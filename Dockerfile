@@ -1,4 +1,4 @@
-FROM jdel/alpine:3.6
+FROM jdel/alpine-glibc:3.6
 
 ENV GOPATH=/go
 ENV PATH=${GOPATH}/bin:${PATH}
@@ -13,16 +13,6 @@ LABEL maintainer=julien@del-piccolo.com
 USER root
 
 RUN apk add --update curl \
- # Install glibc on Alpine (required by docker-compose) from
- # https://github.com/sgerrand/alpine-pkg-glibc
- # See also https://github.com/gliderlabs/docker-alpine/issues/11 
- && GLIBC_VERSION='2.23-r3' \
- && curl -Lo /etc/apk/keys/sgerrand.rsa.pub https://raw.githubusercontent.com/sgerrand/alpine-pkg-glibc/master/sgerrand.rsa.pub \
- && curl -Lo glibc.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC_VERSION/glibc-$GLIBC_VERSION.apk \
- && curl -Lo glibc-bin.apk https://github.com/sgerrand/alpine-pkg-glibc/releases/download/$GLIBC_VERSION/glibc-bin-$GLIBC_VERSION.apk \
- && apk update \
- && apk add glibc.apk glibc-bin.apk \
- && rm glibc.apk glibc-bin.apk \
  && apk add --virtual build-dependencies go gcc build-base glide git openssh-client \
  && curl -sL https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz -o docker.tgz \
  && tar xfvz docker.tgz --strip 1 -C /usr/local/bin/ docker/docker \
