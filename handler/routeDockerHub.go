@@ -86,14 +86,6 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err = hook.Down().CombinedOutput()
-	if err != nil {
-		logRoute.WithField("route", "RouteDockerHub").Error(string(output), err)
-		jsonOutput(w, http.StatusInternalServerError,
-			outputDockerHubPayload("Could not bring hook down", hook.Name))
-		return
-	}
-
 	output, err = hook.Up().CombinedOutput()
 	if err != nil {
 		logRoute.WithField("route", "RouteDockerHub").Error(string(output), err)
