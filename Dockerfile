@@ -3,8 +3,8 @@ FROM jdel/alpine:3.6
 ENV GOPATH=/go
 ENV PATH=${GOPATH}/bin:${PATH}
 ENV DOCKER_API_VERSION=
-ARG DOCKER_VERSION=${DOCKER_VERSION:-latest}
-ARG DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION:-latest}
+ARG DOCKER_VERSION=${DOCKER_VERSION:-17.06.2-ce}
+ARG DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION:-1.16.1}
 ARG ACDC_VERSION=${ACDC_VERSION:-master}
 ARG ACDC_COMMIT=
 
@@ -24,7 +24,7 @@ RUN apk add --update curl \
  && apk add glibc.apk glibc-bin.apk \
  && rm glibc.apk glibc-bin.apk \
  && apk add --virtual build-dependencies go gcc build-base glide git openssh-client \
- && curl -sL https://get.docker.com/builds/Linux/x86_64/docker-${DOCKER_VERSION}.tgz -o docker.tgz \
+ && curl -sL https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz -o docker.tgz \
  && tar xfvz docker.tgz --strip 1 -C /usr/local/bin/ docker/docker \
  && rm -f docker.tgz \
  && curl -sL https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose \
