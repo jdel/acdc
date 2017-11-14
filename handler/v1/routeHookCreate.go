@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
-	"github.com/gorilla/mux"
 	"github.com/jdel/acdc/api"
 	"github.com/jdel/acdc/cfg"
 )
@@ -17,8 +17,6 @@ func RouteHookCreate(w http.ResponseWriter, r *http.Request) {
 	apiKey, authOK := api.BasicAuth(w, r)
 
 	if authOK == true {
-		// Get mux vars from URL
-		paramHookName := mux.Vars(r)["hookName"]
 		key := api.FindKey(apiKey)
 
 		if key.IsRemote() {
@@ -28,10 +26,18 @@ func RouteHookCreate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		paramHookName := strings.TrimSpace(r.FormValue("name"))
+		if paramHookName == "" {
+			logRoute.WithField("route", "RouteHookCreate").Error("Missing hook name")
+			jsonOutput(w, http.StatusBadRequest,
+				outputHook("Missing hook name", paramHookName))
+			return
+		}
+
 		inFile, handler, err := r.FormFile("compose")
 		if err != nil {
 			logRoute.WithField("route", "RouteHookCreate").Error(err)
-			jsonOutput(w, http.StatusUnprocessableEntity,
+			jsonOutput(w, http.StatusBadRequest,
 				outputHook("Corrupted file", paramHookName))
 			return
 		}
