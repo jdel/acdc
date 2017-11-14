@@ -95,15 +95,14 @@ Available Commands:
   version     Get the version of acdc
 
 Flags:
-      --compose-dir string   compose directory (default is $HOME/acdc/compose/) (default "compose")
+      --compose-dir string   compose directory (default "compose")
   -C, --config string        config file (default is $HOME/acdc/config.yml)
   -h, --help                 help for acdc
-  -H, --home string          acdc home (default is $HOME/acdc/
+  -H, --home string          acdc home (default is $HOME/acdc/)
   -l, --log-level string     log level [Error,Warn,Info,Debug] (default "Error")
-  -m, --master-key string    Master API key
-  -p, --port int             port to listen to (default is 8080) (default 8080)
-      --static string        prefix to serve static images (defaults to /static/) (default "static")
-      --static-dir string    static directory (default is $HOME/acdc/static/) (default "static")
+  -p, --port int             port to listen to (default 8080)
+      --static string        prefix to serve static images (default "static")
+      --static-dir string    static directory (default "static")
 
 Use "acdc [command] --help" for more information about a command.
 ```
@@ -118,27 +117,27 @@ Command line parameters will always override config values that have been set in
 
 ## Routes
 
-| Route                       | Method | Auth       | Description                                         |
-| --------------------------- | ------ | ---------- | --------------------------------------------------- |
-| /about                      | GET    | N/A        | Shows acdc version                                  |
-| /slack                      | POST   | API Key    | Receives hooks from Slack                           |
-| /dockerhub/{apiKey}/{tag}   | POST   | API Key    | Receives Docker hub hooks                           |
-| /github                     | POST   | API Key    | Receives Github hooks                               |
-| /v1/key/new                 | POST   | Master Key | Creates a new API Key                               |
-| /v1/key/{apiKey}            | DELETE | Master Key | Deletes the API Key                                 |
-| /v1/key                     | GET    | Master Key | Lists all API Keys                                  |
-| /v1/key/pull                | GET    | API Key    | Git pulls the repository attached to the remote key |
-| /v1/{hookName}/up           | GET    | API Key    | Executes docker-compose up                          |
-| /v1/{hookName}/down         | GET    | API Key    | Executes docker-compose down                        |
-| /v1/{hookName}/start        | GET    | API Key    | Executes docker-compose start                       |
-| /v1/{hookName}/stop         | GET    | API Key    | Executes docker-compose stop                        |
-| /v1/{hookName}/restart      | GET    | API Key    | Executes docker-compose restart                     |
-| /v1/{hookName}/logs         | GET    | API Key    | Executes docker-compose logs                        |
-| /v1/{hookName}/pull         | GET    | API Key    | Executes docker-compose pull                        |
-| /v1/{hookName}              | GET    | API Key    | Executes docker-compose ps                          |
-| /v1/{hookName}              | POST   | API Key    | Uploads a new hook                                  |
-| /v1/{hookName}              | DELETE | API Key    | Deletes an existing hook                            |
-| /v1/                        | GET    | API Key    | Lists all hooks                                     |
+| Route                         | Method | Auth       | Description                                           |
+| ----------------------------- | ------ | ---------- | ----------------------------------------------------- |
+| /about                        | GET    | N/A        | Shows acdc version                                    |
+| /slack                        | POST   | API Key    | Receives Slack hooks                                  |
+| /dockerhub/{apiKey}/{tag}     | POST   | API Key    | Receives Docker hub hooks                             |
+| /github                       | POST   | API Key    | Receives Github hooks                                 |
+| /v1/keys                      | POST   | Master Key | Creates a new API Key                                 |
+| /v1/keys/{apiKey}             | DELETE | Master Key | Deletes the API Key                                   |
+| /v1/keys                      | GET    | Master Key | Lists all API Keys                                    |
+| /v1/pull                      | GET    | API Key    | Git pulls the repository attached to the remote key   |
+| /v1/hooks/{hookName}/up       | GET    | API Key    | Executes docker-compose up                            |
+| /v1/hooks/{hookName}/down     | GET    | API Key    | Executes docker-compose down                          |
+| /v1/hooks/{hookName}/start    | GET    | API Key    | Executes docker-compose start                         |
+| /v1/hooks/{hookName}/stop     | GET    | API Key    | Executes docker-compose stop                          |
+| /v1/hooks/{hookName}/restart  | GET    | API Key    | Executes docker-compose restart                       |
+| /v1/hooks/{hookName}/logs     | GET    | API Key    | Executes docker-compose logs                          |
+| /v1/hooks/{hookName}/pull     | GET    | API Key    | Executes docker-compose pull                          |
+| /v1/hooks/{hookName}          | GET    | API Key    | Executes docker-compose ps                            |
+| /v1/hooks/{hookName}          | POST   | API Key    | Uploads a new hook (requires name query parameter)    |
+| /v1/hooks/{hookName}          | DELETE | API Key    | Deletes an existing hook                              |
+| /v1/hooks                     | GET    | API Key    | Lists all hooks                                       |
 
 ## Generate API Keys
 
@@ -180,21 +179,21 @@ The same commands as above can be executed from the API using the Master Key:
 Local API Key:
 
 ```bash
-$ curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/key/new
+$ curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/keys
 {"message":["Created key"],"key-unique":"W_TGCBY7DowX4vjI"}
 ```
 
 Remote API Key:
 
 ```bash
-curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/key/new -F 'remote=https://github.com/jdel/acdc-recipes'
+curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/keys -F 'remote=https://github.com/jdel/acdc-recipes'
 {"message":["Created key"],"key-unique":"URPvGI5qrqPRxAqZ"}
 ```
 
 Remote API Key with known unique:
 
 ```bash
-curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/key/new -F 'remote=https://github.com/jdel/acdc-recipes' -F 'unique=GSukJLa3LYR4ypks1nowEHrX'
+curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/keys -F 'remote=https://github.com/jdel/acdc-recipes' -F 'unique=GSukJLa3LYR4ypks1nowEHrX'
 {"message":["Created key"],"key-unique":"GSukJLa3LYR4ypks1nowEHrX"}
 ```
 
@@ -203,14 +202,14 @@ curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/k
 In order to get you started quickly, let's create a remote key linked to a git repository with docker-compose files in it:
 
 ```bash
-curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/key/new -F 'remote=https://github.com/jdel/acdc-recipes'
+curl -XPOST -u api-key:JkCilNGK-yGgVNRtdQHZyg== https://acdc.yourdomain.net/v1/keys -F 'remote=https://github.com/jdel/acdc-recipes'
 {"message":["Created key"],"key-unique":"URPvGI5qrqPRxAqZ"}
 ```
 
 Let's use that new key to start the redis hook (be patient, docker is probably pulling the redis image !) :
 
 ```bash
-curl -u api-key:URPvGI5qrqPRxAqZ https://acdc.yourdomain.net/v1/redis/up
+curl -u api-key:URPvGI5qrqPRxAqZ https://acdc.yourdomain.net/v1/hooks/redis/up
 {
   "message": [
     "Creating network \"urpvgi5qrqprxaqzredis_default\" with the default driver",
@@ -225,7 +224,7 @@ curl -u api-key:URPvGI5qrqPRxAqZ https://acdc.yourdomain.net/v1/redis/up
 Now, let's check the status of the redis hook:
 
 ```bash
-curl -u api-key:URPvGI5qrqPRxAqZ https://acdc.yourdomain.net/v1/redis
+curl -u api-key:URPvGI5qrqPRxAqZ https://acdc.yourdomain.net/v1/hooks/redis
 {
   "message": [
     "            Name                           Command               State    Ports   ",
