@@ -186,10 +186,7 @@ func (key Key) AllHooks() []Hook {
 		// TODO: Handle yaml files too !
 		if childNameNoExt := strings.TrimSuffix(childName, ".yml"); child.Mode().IsRegular() && childNameNoExt != childName {
 			hooks = append(hooks, key.GetHook(childNameNoExt))
-		} else {
-			logAPI.Debug("Ignoring non-yml file ", childName)
 		}
-
 	}
 	return hooks
 }
