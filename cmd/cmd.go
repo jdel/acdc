@@ -42,17 +42,15 @@ func init() {
 	// CMD line args > ENV VARS > Config file
 	cobra.OnInitialize(func() { cfg.InitConfig(cfgFile, appHome) })
 	RootCmd.PersistentFlags().StringVarP(&cfgFile, "config", "C", "", "config file (default is $HOME/acdc/config.yml)")
-	RootCmd.PersistentFlags().StringVarP(&appHome, "home", "H", "", "acdc home (default is $HOME/acdc/")
+	RootCmd.PersistentFlags().StringVarP(&appHome, "home", "H", "", "acdc home (default is $HOME/acdc/)")
 	// Optional flags
-	RootCmd.PersistentFlags().IntP("port", "p", 8080, "port to listen to (default is 8080)")
-	RootCmd.PersistentFlags().String("compose-dir", "compose", "compose directory (default is $HOME/acdc/compose/)")
-	RootCmd.PersistentFlags().String("static-dir", "static", "static directory (default is $HOME/acdc/static/)")
-	RootCmd.PersistentFlags().StringP("master-key", "m", "", "Master API key")
+	RootCmd.PersistentFlags().IntP("port", "p", 8080, "port to listen to")
+	RootCmd.PersistentFlags().String("compose-dir", "compose", "compose directory")
+	RootCmd.PersistentFlags().String("static-dir", "static", "static directory")
 	RootCmd.PersistentFlags().StringP("log-level", "l", "Error", "log level [Error,Warn,Info,Debug]")
-	RootCmd.PersistentFlags().String("static", "static", "prefix to serve static images (defaults to /static/)")
+	RootCmd.PersistentFlags().String("static", "static", "prefix to serve static images")
 	// Bind flags to config
 	viper.BindPFlag("acdc.port", RootCmd.PersistentFlags().Lookup("port"))
-	viper.BindPFlag("acdc.master-key", RootCmd.PersistentFlags().Lookup("master-key"))
 	viper.BindPFlag("acdc.filesystem.compose-dir", RootCmd.PersistentFlags().Lookup("compose-dir"))
 	viper.BindPFlag("acdc.filesystem.static-dir", RootCmd.PersistentFlags().Lookup("static-dir"))
 	viper.BindPFlag("acdc.log-level", RootCmd.PersistentFlags().Lookup("log-level"))
