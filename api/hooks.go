@@ -33,7 +33,7 @@ func (key Key) GetHook(name string) Hook {
 
 // Pull pulls images for the hook
 func (hook Hook) Pull() *exec.Cmd {
-	return exec.Command(cfg.DockerComposePath,
+	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"pull",
 		)...,
@@ -42,7 +42,7 @@ func (hook Hook) Pull() *exec.Cmd {
 
 // Up brings hook up
 func (hook Hook) Up() *exec.Cmd {
-	return exec.Command(cfg.DockerComposePath,
+	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"up",
 			"-d",
@@ -52,7 +52,7 @@ func (hook Hook) Up() *exec.Cmd {
 
 // Down brings hook down
 func (hook Hook) Down() *exec.Cmd {
-	return exec.Command(cfg.DockerComposePath,
+	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"down",
 		)...,
@@ -61,7 +61,7 @@ func (hook Hook) Down() *exec.Cmd {
 
 // Ps executes docker-compose ps
 func (hook Hook) Ps() *exec.Cmd {
-	return exec.Command(cfg.DockerComposePath,
+	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"ps",
 		)...,
@@ -70,7 +70,7 @@ func (hook Hook) Ps() *exec.Cmd {
 
 // Logs return hook logs
 func (hook Hook) Logs() *exec.Cmd {
-	return exec.Command(cfg.DockerComposePath,
+	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"logs",
 		)...,
@@ -79,7 +79,7 @@ func (hook Hook) Logs() *exec.Cmd {
 
 // Restart restarts hook
 func (hook Hook) Restart() *exec.Cmd {
-	return exec.Command(cfg.DockerComposePath,
+	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"restart",
 		)...,
@@ -88,7 +88,7 @@ func (hook Hook) Restart() *exec.Cmd {
 
 // Start starts hook
 func (hook Hook) Start() *exec.Cmd {
-	return exec.Command(cfg.DockerComposePath,
+	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"start",
 		)...,
@@ -97,7 +97,7 @@ func (hook Hook) Start() *exec.Cmd {
 
 // Stop stops hook
 func (hook Hook) Stop() *exec.Cmd {
-	return exec.Command(cfg.DockerComposePath,
+	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"stop",
 		)...,

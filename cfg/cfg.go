@@ -8,6 +8,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"regexp"
+	"strings"
 
 	"github.com/jdel/acdc/stc"
 	"github.com/jdel/acdc/util"
@@ -25,9 +26,6 @@ import (
 var Version,
 	appHome string
 
-// DockerComposePath is the path docker-compose is available at
-var DockerComposePath string
-
 var logConfig = log.WithFields(log.Fields{
 	"module": "config",
 })
@@ -44,12 +42,24 @@ func InitConfig(cfgFile string, homeDir string) {
 	// Instantiate appHome ASAP
 	appHome = getOrCreateHome(homeDir)
 
-	DockerComposePath, err = exec.LookPath("docker-compose")
-	if err != nil {
-		logConfig.Fatal("Please install docker-compose on your system")
+	if dockerCompose := GetDockerComposeLocation(); dockerCompose == "" {
+		dockerCompose, err = exec.LookPath("docker-compose")
+		if err != nil {
+			logConfig.Fatal("Cannot find docker-compose on your system")
+		}
+		viper.Set("docker-compose.binary", dockerCompose)
+	} else {
+		if !util.FileExists(dockerCompose) {
+			logConfig.Fatalf("Cannot find docker-compose at the specified location '%s'. Trying to find it in $PATH", dockerCompose)
+			dockerCompose, err = exec.LookPath("docker-compose")
+			if err != nil {
+				logConfig.Fatal("Cannot find docker-compose on your system")
+			}
+			viper.Set("docker-compose.binary", dockerCompose)
+		}
 	}
 
-	logConfig.Info("Docker-compose path: ", DockerComposePath)
+	logConfig.Info("Docker-compose binary: ", GetDockerComposeLocation())
 
 	if cfgFile != "" {
 		// Use config file from the flag if present
@@ -87,6 +97,9 @@ func InitConfig(cfgFile string, homeDir string) {
 			logConfig.Error(err)
 		}
 	}
+
+	// Volatile configuration
+	viper.Set("docker-compose.version", getDockerComposeVersion())
 
 	// Reset logLevel once we read the config
 	logLevel = parseLogLevel(GetLogLevel())
@@ -127,6 +140,28 @@ func parseLogLevel(level string) log.Level {
 		logConfig.WithField("log-level", level).Error("Cannot parse log level, setting to Error")
 	}
 	return logLevel
+}
+
+func getDockerComposeVersion() []string {
+	dockerComposeVersion, _ := exec.Command(GetDockerComposeLocation(), "version").CombinedOutput()
+	lines := strings.Split(string(dockerComposeVersion), "\n")
+	return removeEmptyElements(lines)
+}
+
+func removeEmptyElements(slice []string) []string {
+	filteredSlice := slice[:0]
+	for _, element := range slice {
+		if strings.TrimSpace(element) != "" {
+			filteredSlice = append(filteredSlice, element)
+		}
+	}
+	return filteredSlice
+}
+
+// GetDockerComposeLocation returns the path
+// for docker-compose
+func GetDockerComposeLocation() string {
+	return viper.GetString("docker-compose.binary")
 }
 
 // GetPort returns the port

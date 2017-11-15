@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"github.com/jdel/acdc/api"
@@ -26,7 +27,9 @@ func RouteHookCreate(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		paramHookName := strings.TrimSpace(r.FormValue("name"))
+		alphanum := regexp.MustCompile("[^a-zA-Z0-9]+")
+		paramHookName := alphanum.ReplaceAllString(strings.TrimSpace(r.FormValue("name")), "")
+
 		if paramHookName == "" {
 			logRoute.WithField("route", "RouteHookCreate").Error("Missing hook name")
 			jsonOutput(w, http.StatusBadRequest,
