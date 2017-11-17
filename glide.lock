@@ -1,10 +1,16 @@
 hash: 5260a6029d7f929ba2bbb84f4958eeb1780ac91af4d2b4ea4e29cc2b4ab830fb
-updated: 2017-09-05T12:13:28.628638222+02:00
+updated: 2017-11-17T11:09:23.718022+01:00
 imports:
 - name: github.com/dchest/uniuri
   version: 8902c56451e9b58ff940bbe5fec35d5f9c04584a
 - name: github.com/fsnotify/fsnotify
   version: 629574ca2a5df945712d3079857300b5e4da0236
+- name: github.com/google/gops
+  version: dcc978d6e8f8ec561a0906e050f4268515a3a8e5
+  subpackages:
+  - agent
+  - internal
+  - signal
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/mux
@@ -26,6 +32,8 @@ imports:
   version: d14ea06fba99483203c19d92cfcd13ebe73135f4
   subpackages:
   - io
+- name: github.com/kardianos/osext
+  version: ae77be60afb1dcacde03767a8c37337fad28ac14
 - name: github.com/magiconair/properties
   version: 8d7837e64d3c1ee4e54a880c5a920ab4316fc90a
 - name: github.com/mitchellh/go-homedir
