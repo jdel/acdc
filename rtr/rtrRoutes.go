@@ -34,7 +34,7 @@ var appRoutes = routes{
 	route{
 		Name:        "DockerHub",
 		Method:      "POST",
-		Pattern:     "/dockerhub/{apiKey}/{tag}",
+		Pattern:     "/dockerhub",
 		HandlerFunc: handler.RouteDockerHub,
 	},
 	route{

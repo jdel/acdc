@@ -121,7 +121,7 @@ Command line parameters will always override config values that have been set in
 | ----------------------------- | ------ | ---------- | ----------------------------------------------------- |
 | /about                        | GET    | N/A        | Shows acdc version                                    |
 | /slack                        | POST   | API Key    | Receives Slack hooks                                  |
-| /dockerhub/{apiKey}/{tag}     | POST   | API Key    | Receives Docker hub hooks                             |
+| /dockerhub/                   | POST   | API Key    | Receives Docker hub hooks (parms: apiKey, tag, hook)  |
 | /github                       | POST   | API Key    | Receives Github hooks                                 |
 | /v1/keys                      | POST   | Master Key | Creates a new API Key                                 |
 | /v1/keys/{apiKey}             | DELETE | Master Key | Deletes the API Key                                   |

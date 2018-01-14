@@ -52,8 +52,9 @@ func outputDockerHubPayload(message, context string) dockerHubCallbackPayload {
 func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	var output []byte
 	var incomingPayload dockerHubPayload
-	apiKey := mux.Vars(r)["apiKey"]
-	tag := mux.Vars(r)["tag"]
+	hookName := r.URL.Query().Get("hook")
+	apiKey := r.URL.Query().Get("apiKey")
+	tag := r.URL.Query().Get("tag")
 
 	key := api.FindKey(apiKey)
 	if key.Unique == "" {
@@ -76,7 +77,11 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	hook := key.GetHook(incomingPayload.Repository.Name)
+	if hookName == "" {
+	  hookName = incomingPayload.Repository.Name
+	}
+
+	hook := key.GetHook(hookName)
 
 	output, err = hook.Pull().CombinedOutput()
 	if err != nil {
