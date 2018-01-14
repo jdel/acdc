@@ -204,10 +204,9 @@ func AllAPIKeys() (map[string]Key, error) {
 
 	for _, child := range children {
 		childName := child.Name()
-		if child.Mode().IsDir() {
+		if child.Mode().IsDir() || (child.Mode()&os.ModeSymlink) == os.ModeSymlink {
 			keys[childName] = FindKey(childName)
 		}
-
 	}
 	return keys, err
 }
