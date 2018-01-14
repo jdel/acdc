@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/gorilla/mux"
 	"github.com/jdel/acdc/api"
 )
 
@@ -58,7 +57,7 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 
 	key := api.FindKey(apiKey)
 	if key.Unique == "" {
-		jsonOutput(w, http.StatusInternalServerError,
+		jsonOutput(w, http.StatusUnauthorized,
 			outputDockerHubPayload("Could not get key", apiKey))
 		return
 	}
@@ -72,7 +71,7 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if tag != incomingPayload.PushData.Tag {
-		jsonOutput(w, http.StatusInternalServerError,
+		jsonOutput(w, http.StatusNotFound,
 			fmt.Sprintln("Ignoring tag", incomingPayload.PushData.Tag, "does not match", tag))
 		return
 	}
@@ -86,7 +85,7 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	output, err = hook.Pull().CombinedOutput()
 	if err != nil {
 		logRoute.WithField("route", "RouteDockerHub").Error(string(output), err)
-		jsonOutput(w, http.StatusInternalServerError,
+		jsonOutput(w, http.StatusNotFound,
 			outputDockerHubPayload("Could not pull images for hook", hook.Name))
 		return
 	}
