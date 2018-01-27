@@ -3,12 +3,14 @@ go:
 - 1.9
 install:
 - go get -v github.com/golang/dep/cmd/dep
+- go get -v github.com/mitchellh/gox
 - cd $GOPATH/src/github.com/golang/dep/cmd/dep && git checkout tags/v0.4.1 && go install
 - cd - && dep ensure -v
 script:
-- go get -v github.com/mitchellh/gox
 - gox -osarch="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64 windows/386" -output="out/{{.Dir}}-{{.OS}}-{{.Arch}}" -ldflags "-X github.com/jdel/acdc/cfg.Version=$TRAVIS_TAG"
-- ls -alh out
+
+before_deploy:
+- gem install dpl -v 1.8.44
 deploy:
 - provider: bintray
   file: .bintray.json
