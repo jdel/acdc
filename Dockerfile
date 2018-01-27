@@ -13,7 +13,7 @@ LABEL maintainer=julien@del-piccolo.com
 USER root
 
 RUN apk add --update curl \
- && apk add --virtual build-dependencies go gcc build-base glide git openssh-client \
+ && apk add --virtual build-dependencies go gcc build-base git openssh-client \
  && curl -sL https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz -o docker.tgz \
  && tar xfvz docker.tgz --strip 1 -C /usr/local/bin/ docker/docker \
  && rm -f docker.tgz \
@@ -24,7 +24,10 @@ RUN apk add --update curl \
  && rm -f acdc.zip \
  && mv ${GOPATH}/src/github.com/jdel/acdc-* ${GOPATH}/src/github.com/jdel/acdc \
  && cd ${GOPATH}/src/github.com/jdel/acdc/ \
- && glide install -v \
+ && go get -v github.com/golang/dep/cmd/dep \
+ && cd $GOPATH/src/github.com/golang/dep/cmd/dep \
+ && git checkout tags/v0.4.1 && go install \
+ && dep ensure -v -vendor-only \
  && go build -o /usr/local/bin/acdc -ldflags "-X github.com/jdel/acdc/cfg.Version=${ACDC_VERSION}-${ACDC_COMMIT}" \
  && chmod 755 /usr/local/bin/docker /usr/local/bin/docker-compose /usr/local/bin/acdc \
  && apk del build-dependencies \
