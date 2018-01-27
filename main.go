@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	if err := agent.Listen(agent.Options{}); err != nil {
+	if err := agent.Listen(&agent.Options{}); err != nil {
 		log.Fatal(err)
 	}
 	cmd.Execute()
