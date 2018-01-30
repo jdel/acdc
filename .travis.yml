@@ -3,12 +3,18 @@ go:
 - 1.9
 install:
 - go get -v github.com/golang/dep/cmd/dep
+- go get -v github.com/codeclimate/test-reporter
 - go get -v github.com/mitchellh/gox
 - cd $GOPATH/src/github.com/golang/dep/cmd/dep && git checkout tags/v0.4.1 && go install
+- cd $GOPATH/src/github.com/codeclimate/test-reporter && git checkout tags/v0.4.3 && go install
 - cd - && dep ensure -v -vendor-only
+before_script:
+- test-reporter before-build
 script:
 - gox -osarch="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64 windows/386" -output="out/{{.Dir}}-{{.OS}}-{{.Arch}}" -ldflags "-X github.com/jdel/acdc/cfg.Version=$TRAVIS_TAG"
-
+- go test -coverprofile c.out
+after_script:
+- test-reporter after-build --input-type gocov --exit-code $TRAVIS_TEST_RESULT
 deploy:
 - provider: bintray
   file: .bintray.json
@@ -37,3 +43,6 @@ deploy:
 notifications:
   slack:
     secure: eAEEMIGZNxmFoBcUi8Mi21HOeSyS8PhmByzsWxvL8p9Q2uIIAVQfgB3ozUGRWO1/rpXQveCRRx8LEow2YWt/yr1FWBdWXSh2yinB22c5jc7nayThTLK5HIy9KUpRAfEldx/iIudfveBSrw+jHFzvCrNobKuj85bUEExtU3Ro8hs1CsQ09B8laNSuMOqVWBrFKnmqJHATHpRWRL9ILSI1tv/VtclNlrAYGmH7ezgaHkBzsBJr9GbwQHmKNw+OxXuKHs1k9x8mXYkJrJfZIfiupLDyINo+JhVuDDkZdG6M02MlTZsu1YNecuqA8MVMmkI/YhY+snzONZccVNpar0ApE8jDwp5NyasDYDOqFALRNG1FLgPClWnSMOchNYG0SrOlzwN114Pn6E/pKxUu7ncaId/Uhp/vjgYoIVdYMyIcRUJNEC/j43dI/d+EgE+XLN+bSn6J+9JL90M78cHHX8Acjq8kasu/uGwSPig6k7xnUHTfXHGj7+zudComAVgzsFJdgw6fyb5AJ30aQDGVPCB7PgVMZooQVW0Jdh+omFKrNd2rm3Hs/soGrFvJYSWJVlBwMJ4Xp8tDhUsLsHQ/yrrGqmxfNAptqdVzN6SdEfIX7S8XCppdS1+u/jU0sTXjibX2IqNTWdEKYjoOnMAPtwkaOOzzIYSSCe/HtymlJDGd5a0=
+env:
+  global:
+    - secure: gXN9q+fbmYJFMnYB85a3yFwQyYEopIlf58S2oDJafGDSxNGYWBU7+2qobDdnfcTIsjDSqvr2df5FVQRhjh2xdR8imbC3HN5fy1L2CmL3z3H4iy8IgkSC08SJMfXBpxgpUy2zlWFl0wRiioe4+0nXlxoyVMxENcv2Qq7w5L7mXoXi6sqWDiAvbUMyzuwuY1+8yRkCeb6CyxUzRsUpktA0n8fd9nf/x8lmHsVZyNlF+2C8GKlAVlgbCD5Z0gSEueMfZN4muzOKiooapdkQK6s5cFopHYdpyq/bNgOAvm7xJITXIXVgQ9BMFzWa85kpzqflx3MmbccbYQLVMrzF+z6kmGuMqdMIlvwHks7U/0xUE7QXLLIz1JAG11VBmyFoygXoG89q1fEAeHBMhgeX246+p7NZT/FqdeV3YLsR7bNbG/Xq8TKJpk0VfcIS6kOSxF51pebvMuqBGcUCwv01sGZ0oEJ/lFccsmPEj6QIg75ZmwySggB9rVh368n+MnUSFCyWFyCoYM5uVVubkg3GWjJoGFfzxU7k0Pv5qvC5s18ys+ZdalYAA0MZ0yeRzFcELlFlRWWCHaY79HkovZjIzL6HzJ4uM5O3/ya1uSGoAr0RE665nkLQ0eaJTVRH/H/zW/imORFI+BTy2TRL2e4PmgvwCsgy4+89E3O9lx9LAxWATIk=
