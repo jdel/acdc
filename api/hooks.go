@@ -104,6 +104,16 @@ func (hook Hook) Stop() *exec.Cmd {
 	)
 }
 
+// Build builds hook
+func (hook Hook) Build() *exec.Cmd {
+	return exec.Command(cfg.GetDockerComposeLocation(),
+		append(hook.composeCommonArgs(),
+			"build",
+			"--no-cache",
+		)...,
+	)
+}
+
 // Delete deletes the hook
 func (hook Hook) Delete() error {
 	filePath := fmt.Sprintf("%s.yml", hook.FileName)

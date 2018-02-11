@@ -44,6 +44,12 @@ var appRoutes = routes{
 		HandlerFunc: handler.RouteGithub,
 	},
 	route{
+		Name:        "Gogs",
+		Method:      "POST",
+		Pattern:     "/gogs",
+		HandlerFunc: handler.RouteGogs,
+	},
+	route{
 		Name:        "APIKeys",
 		Method:      "GET",
 		PathPrefix:  "/v1",
