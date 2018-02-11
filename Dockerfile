@@ -23,10 +23,10 @@ RUN apk add --update curl \
  && unzip acdc.zip -d ${GOPATH}/src/github.com/jdel/ \
  && rm -f acdc.zip \
  && mv ${GOPATH}/src/github.com/jdel/acdc-* ${GOPATH}/src/github.com/jdel/acdc \
- && cd ${GOPATH}/src/github.com/jdel/acdc/ \
  && go get -v github.com/golang/dep/cmd/dep \
  && cd $GOPATH/src/github.com/golang/dep/cmd/dep \
  && git checkout tags/v0.4.1 && go install \
+ && cd ${GOPATH}/src/github.com/jdel/acdc/ \
  && dep ensure -v -vendor-only \
  && go build -o /usr/local/bin/acdc -ldflags "-X github.com/jdel/acdc/cfg.Version=${ACDC_VERSION}-${ACDC_COMMIT}" \
  && chmod 755 /usr/local/bin/docker /usr/local/bin/docker-compose /usr/local/bin/acdc \
