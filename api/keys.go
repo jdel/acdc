@@ -19,14 +19,14 @@ type Key struct {
 }
 
 // NewKey creates a new key with a known unique or generates a random one
-// iif unique is "", repote param can be "" for a local key
-func NewKey(unique, remote string) (Key, error) {
+// if unique is "", remote param can be "" for a local key
+func NewKey(unique, remote string) (*Key, error) {
 	var err error
 	if unique == "" {
-		unique, err = util.GenerateRandomString(12)
+		unique, err = util.GenerateRandomString(24)
 		if err != nil {
 			logAPI.Error("Could not generate an API Key:", err)
-			return Key{}, err
+			return nil, err
 		}
 	}
 	key := newKey(unique, remote)
@@ -51,13 +51,13 @@ func (key Key) Delete() error {
 }
 
 // newKey creates and returns a new key
-func newKey(unique, remote string) Key {
+func newKey(unique, remote string) *Key {
 	apiKey := Key{
 		Unique: unique,
 		Remote: remote,
 	}
 	apiKey.create()
-	return apiKey
+	return &apiKey
 }
 
 // FindKey returns a Key from the unique string

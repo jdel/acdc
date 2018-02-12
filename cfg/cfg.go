@@ -85,7 +85,7 @@ func InitConfig(cfgFile string, homeDir string) {
 		}
 
 		logConfig.Info("No config file used, writing acdc.yml with default values")
-		if masterKey, err := util.GenerateRandomString(16); err != nil {
+		if masterKey, err := util.GenerateRandomString(24); err != nil {
 			logConfig.Error("Could not generate key", err)
 			viper.Set("acdc.master-key", "pleasechangeme")
 		} else {

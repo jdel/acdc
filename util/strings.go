@@ -1,19 +1,7 @@
 package util
 
-import (
-	"fmt"
-	"regexp"
-)
-
-// Prefixes a string with / if the string
-// doesn't start with /
-func addSlashPrefix(value string) string {
-	if match, _ := regexp.MatchString("^/", value); !match {
-		value = fmt.Sprintf("/%s", value)
-	}
-	return value
-}
-
+// IsStringInSlice returns true if the strings slice sl
+// contains an element equal to s
 func IsStringInSlice(s string, sl []string) bool {
 	for _, v := range sl {
 		if v == s {
