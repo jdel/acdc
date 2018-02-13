@@ -1,10 +1,13 @@
 package api
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"reflect"
+	"strings"
 
 	"github.com/jdel/acdc/cfg"
 	"github.com/jdel/acdc/util"
@@ -29,6 +32,32 @@ func (key Key) GetHook(name string) Hook {
 		return Hook{}
 	}
 	return hook
+}
+
+func (hook Hook) callMethod(m string) (string, error) {
+	logAPI.Debugf("method: %+v", strings.Title(m))
+	method := reflect.ValueOf(&hook).MethodByName(strings.Title(m))
+	logAPI.Debugf("reflected method: %+v", method)
+	logAPI.Debugf("reflected method type %s", method.Kind())
+	if method.Kind() == reflect.Invalid {
+		return "", fmt.Errorf("Ignored action %s", m)
+	}
+	out := method.Call([]reflect.Value{})
+	cmd := out[0].Interface().(*exec.Cmd)
+	o, err := cmd.CombinedOutput()
+	logAPI.Debugf("output: %v", string(o))
+	return string(o), err
+}
+
+// ExecuteSequentially will execute the commands sequentually and return output
+func (hook Hook) ExecuteSequentially(actions ...string) string {
+	logAPI.Debugf("Sequential Actions: %+v", actions)
+	var output bytes.Buffer
+	for _, a := range actions {
+		logAPI.Debugf("Processing: %+v", a)
+		hook.callMethod(a)
+	}
+	return output.String()
 }
 
 // Pull pulls images for the hook

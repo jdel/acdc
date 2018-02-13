@@ -10,8 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jdel/acdc/util"
-
 	"github.com/jdel/acdc/api"
 )
 
@@ -122,8 +120,6 @@ func findMatchingKey(expectedSum, message []byte) api.Key {
 // RouteGogs handles incoming gogs pushes
 func RouteGogs(w http.ResponseWriter, r *http.Request) {
 	var incomingPayload gogsPayload
-	var output []byte
-
 	if r.Header.Get("X-Gogs-Event") != "push" {
 		return
 	}
@@ -160,49 +156,51 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 		key.Pull()
 	}
 
-	if util.IsStringInSlice("pull", actions) {
-		logRoute.Debugf("Pulling %s", hook.Name)
-		output, err = hook.Pull().CombinedOutput()
-		if err != nil {
-			logRoute.Error(string(output), err)
-			jsonOutput(w, http.StatusInternalServerError,
-				outputGogsPayload("Could not pull images for hook", hook.Name))
-			return
-		}
-	}
+	hook.ExecuteSequentially(actions...)
 
-	if util.IsStringInSlice("down", actions) {
-		logRoute.Debugf("Bringing %s down", hook.Name)
-		output, err = hook.Down().CombinedOutput()
-		if err != nil {
-			logRoute.Error(string(output), err)
-			jsonOutput(w, http.StatusInternalServerError,
-				outputGogsPayload("Could not bring hook down", hook.Name))
-			return
-		}
-	}
+	// if util.IsStringInSlice("pull", actions) {
+	// 	logRoute.Debugf("Pulling %s", hook.Name)
+	// 	output, err = hook.Pull().CombinedOutput()
+	// 	if err != nil {
+	// 		logRoute.Error(string(output), err)
+	// 		jsonOutput(w, http.StatusInternalServerError,
+	// 			outputGogsPayload("Could not pull images for hook", hook.Name))
+	// 		return
+	// 	}
+	// }
 
-	if util.IsStringInSlice("build", actions) {
-		logRoute.Debugf("Building %s", hook.Name)
-		output, err = hook.Build().CombinedOutput()
-		if err != nil {
-			logRoute.Error(string(output), err)
-			jsonOutput(w, http.StatusInternalServerError,
-				outputGogsPayload("Could not build hook", hook.Name))
-			return
-		}
-	}
+	// if util.IsStringInSlice("down", actions) {
+	// 	logRoute.Debugf("Bringing %s down", hook.Name)
+	// 	output, err = hook.Down().CombinedOutput()
+	// 	if err != nil {
+	// 		logRoute.Error(string(output), err)
+	// 		jsonOutput(w, http.StatusInternalServerError,
+	// 			outputGogsPayload("Could not bring hook down", hook.Name))
+	// 		return
+	// 	}
+	// }
 
-	if util.IsStringInSlice("up", actions) {
-		logRoute.Debugf("Bringing %s up", hook.Name)
-		output, err = hook.Up().CombinedOutput()
-		if err != nil {
-			logRoute.Error(string(output), err)
-			jsonOutput(w, http.StatusInternalServerError,
-				outputGogsPayload("Could not bring hook up", hook.Name))
-			return
-		}
-	}
+	// if util.IsStringInSlice("build", actions) {
+	// 	logRoute.Debugf("Building %s", hook.Name)
+	// 	output, err = hook.Build().CombinedOutput()
+	// 	if err != nil {
+	// 		logRoute.Error(string(output), err)
+	// 		jsonOutput(w, http.StatusInternalServerError,
+	// 			outputGogsPayload("Could not build hook", hook.Name))
+	// 		return
+	// 	}
+	// }
+
+	// if util.IsStringInSlice("up", actions) {
+	// 	logRoute.Debugf("Bringing %s up", hook.Name)
+	// 	output, err = hook.Up().CombinedOutput()
+	// 	if err != nil {
+	// 		logRoute.Error(string(output), err)
+	// 		jsonOutput(w, http.StatusInternalServerError,
+	// 			outputGogsPayload("Could not bring hook up", hook.Name))
+	// 		return
+	// 	}
+	// }
 
 	jsonOutput(w, http.StatusOK,
 		outputGogsPayload("ok", ""))
