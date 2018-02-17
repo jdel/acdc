@@ -64,14 +64,17 @@ func (hook Hook) callMethod(m string) (string, error) {
 }
 
 // ExecuteSequentially will execute the commands sequentually and return output
-func (hook Hook) ExecuteSequentially(actions ...string) string {
-	logAPI.Debugf("Sequential Actions: %+v", actions)
+func (hook Hook) ExecuteSequentially(actions ...string) (string, error) {
+	var err error
+	var o string
 	var output bytes.Buffer
 	for _, a := range actions {
 		logAPI.Debugf("Processing: %+v", a)
-		hook.callMethod(a)
+		o, err = hook.callMethod(a)
+		output.WriteString(o)
 	}
-	return output.String()
+
+	return output.String(), err
 }
 
 // Pull pulls images for the hook

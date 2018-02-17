@@ -47,7 +47,12 @@ func RouteSlack(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output := hook.ExecuteSequentially(strings.Split(args[2], "+")...)
+	output, err := hook.ExecuteSequentially(strings.Split(args[2], "+")...)
+	if err != nil {
+		jsonOutput(w, http.StatusInternalServerError,
+			slackCallbackPayload(err.Error(), hook.Name))
+		return
+	}
 
 	anonymizedOutput := fmt.Sprintf(
 		"```%s```",
@@ -56,6 +61,7 @@ func RouteSlack(w http.ResponseWriter, r *http.Request) {
 
 	jsonOutput(w, http.StatusOK,
 		slackCallbackPayload(anonymizedOutput, hook.Name))
+	return
 }
 
 func slackParseArgs(text string) []string {
