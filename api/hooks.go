@@ -35,12 +35,26 @@ func (key Key) GetHook(name string) Hook {
 }
 
 func (hook Hook) callMethod(m string) (string, error) {
-	logAPI.Debugf("method: %+v", strings.Title(m))
+	allowedActions := []string{
+		"pull",
+		"up",
+		"down",
+		"ps",
+		"logs",
+		"start",
+		"stop",
+		"restart",
+		"build",
+		"config",
+		"kill",
+	}
+
+	if !util.IsStringInSlice(m, allowedActions) {
+		return "", fmt.Errorf("Invalid action %s", m)
+	}
 	method := reflect.ValueOf(&hook).MethodByName(strings.Title(m))
-	logAPI.Debugf("reflected method: %+v", method)
-	logAPI.Debugf("reflected method type %s", method.Kind())
 	if method.Kind() == reflect.Invalid {
-		return "", fmt.Errorf("Ignored action %s", m)
+		return "", fmt.Errorf("Unknown method for action %s", m)
 	}
 	out := method.Call([]reflect.Value{})
 	cmd := out[0].Interface().(*exec.Cmd)
@@ -106,15 +120,6 @@ func (hook Hook) Logs() *exec.Cmd {
 	)
 }
 
-// Restart restarts hook
-func (hook Hook) Restart() *exec.Cmd {
-	return exec.Command(cfg.GetDockerComposeLocation(),
-		append(hook.composeCommonArgs(),
-			"restart",
-		)...,
-	)
-}
-
 // Start starts hook
 func (hook Hook) Start() *exec.Cmd {
 	return exec.Command(cfg.GetDockerComposeLocation(),
@@ -133,12 +138,41 @@ func (hook Hook) Stop() *exec.Cmd {
 	)
 }
 
+// Restart restarts hook
+func (hook Hook) Restart() *exec.Cmd {
+	return exec.Command(cfg.GetDockerComposeLocation(),
+		append(hook.composeCommonArgs(),
+			"restart",
+		)...,
+	)
+}
+
 // Build builds hook
 func (hook Hook) Build() *exec.Cmd {
 	return exec.Command(cfg.GetDockerComposeLocation(),
 		append(hook.composeCommonArgs(),
 			"build",
 			"--no-cache",
+			"--memory",
+			"200m",
+		)...,
+	)
+}
+
+// Config shows hook compose file
+func (hook Hook) Config() *exec.Cmd {
+	return exec.Command(cfg.GetDockerComposeLocation(),
+		append(hook.composeCommonArgs(),
+			"config",
+		)...,
+	)
+}
+
+// Kill kills hook's containers
+func (hook Hook) Kill() *exec.Cmd {
+	return exec.Command(cfg.GetDockerComposeLocation(),
+		append(hook.composeCommonArgs(),
+			"kill",
 		)...,
 	)
 }
