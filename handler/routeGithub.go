@@ -2,153 +2,17 @@ package handler
 
 import (
 	"crypto/hmac"
-	"crypto/sha256"
-	"fmt"
-	"hash"
+	"crypto/sha1"
+	"encoding/hex"
+	"encoding/json"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
+
+	"github.com/jdel/acdc/api"
 )
 
-/*
-{
-   "zen":"Avoid administrative distraction.",
-   "hook_id":15681425,
-   "hook":{
-      "type":"Repository",
-      "id":15681425,
-      "name":"web",
-      "active":true,
-      "events":[
-         "push"
-      ],
-      "config":{
-         "content_type":"json",
-         "insecure_ssl":"0",
-         "secret":"********",
-         "url":"https://requestb.in/q0n3guq0"
-      },
-      "updated_at":"2017-08-22T21:43:59Z",
-      "created_at":"2017-08-22T21:43:59Z",
-      "url":"https://api.github.com/repos/jdel/acdc/hooks/15681425",
-      "test_url":"https://api.github.com/repos/jdel/acdc/hooks/15681425/test",
-      "ping_url":"https://api.github.com/repos/jdel/acdc/hooks/15681425/pings",
-      "last_response":{
-         "code":null,
-         "status":"unused",
-         "message":null
-      }
-   },
-   "repository":{
-      "id":100611332,
-      "name":"acdc",
-      "full_name":"jdel/acdc",
-      "owner":{
-         "login":"jdel",
-         "id":1107511,
-         "avatar_url":"https://avatars2.githubusercontent.com/u/1107511?v=4",
-         "gravatar_id":"",
-         "url":"https://api.github.com/users/jdel",
-         "html_url":"https://github.com/jdel",
-         "followers_url":"https://api.github.com/users/jdel/followers",
-         "following_url":"https://api.github.com/users/jdel/following{/other_user}",
-         "gists_url":"https://api.github.com/users/jdel/gists{/gist_id}",
-         "starred_url":"https://api.github.com/users/jdel/starred{/owner}{/repo}",
-         "subscriptions_url":"https://api.github.com/users/jdel/subscriptions",
-         "organizations_url":"https://api.github.com/users/jdel/orgs",
-         "repos_url":"https://api.github.com/users/jdel/repos",
-         "events_url":"https://api.github.com/users/jdel/events{/privacy}",
-         "received_events_url":"https://api.github.com/users/jdel/received_events",
-         "type":"User",
-         "site_admin":false
-      },
-      "private":false,
-      "html_url":"https://github.com/jdel/acdc",
-      "description":null,
-      "fork":false,
-      "url":"https://api.github.com/repos/jdel/acdc",
-      "forks_url":"https://api.github.com/repos/jdel/acdc/forks",
-      "keys_url":"https://api.github.com/repos/jdel/acdc/keys{/key_id}",
-      "collaborators_url":"https://api.github.com/repos/jdel/acdc/collaborators{/collaborator}",
-      "teams_url":"https://api.github.com/repos/jdel/acdc/teams",
-      "hooks_url":"https://api.github.com/repos/jdel/acdc/hooks",
-      "issue_events_url":"https://api.github.com/repos/jdel/acdc/issues/events{/number}",
-      "events_url":"https://api.github.com/repos/jdel/acdc/events",
-      "assignees_url":"https://api.github.com/repos/jdel/acdc/assignees{/user}",
-      "branches_url":"https://api.github.com/repos/jdel/acdc/branches{/branch}",
-      "tags_url":"https://api.github.com/repos/jdel/acdc/tags",
-      "blobs_url":"https://api.github.com/repos/jdel/acdc/git/blobs{/sha}",
-      "git_tags_url":"https://api.github.com/repos/jdel/acdc/git/tags{/sha}",
-      "git_refs_url":"https://api.github.com/repos/jdel/acdc/git/refs{/sha}",
-      "trees_url":"https://api.github.com/repos/jdel/acdc/git/trees{/sha}",
-      "statuses_url":"https://api.github.com/repos/jdel/acdc/statuses/{sha}",
-      "languages_url":"https://api.github.com/repos/jdel/acdc/languages",
-      "stargazers_url":"https://api.github.com/repos/jdel/acdc/stargazers",
-      "contributors_url":"https://api.github.com/repos/jdel/acdc/contributors",
-      "subscribers_url":"https://api.github.com/repos/jdel/acdc/subscribers",
-      "subscription_url":"https://api.github.com/repos/jdel/acdc/subscription",
-      "commits_url":"https://api.github.com/repos/jdel/acdc/commits{/sha}",
-      "git_commits_url":"https://api.github.com/repos/jdel/acdc/git/commits{/sha}",
-      "comments_url":"https://api.github.com/repos/jdel/acdc/comments{/number}",
-      "issue_comment_url":"https://api.github.com/repos/jdel/acdc/issues/comments{/number}",
-      "contents_url":"https://api.github.com/repos/jdel/acdc/contents/{+path}",
-      "compare_url":"https://api.github.com/repos/jdel/acdc/compare/{base}...{head}",
-      "merges_url":"https://api.github.com/repos/jdel/acdc/merges",
-      "archive_url":"https://api.github.com/repos/jdel/acdc/{archive_format}{/ref}",
-      "downloads_url":"https://api.github.com/repos/jdel/acdc/downloads",
-      "issues_url":"https://api.github.com/repos/jdel/acdc/issues{/number}",
-      "pulls_url":"https://api.github.com/repos/jdel/acdc/pulls{/number}",
-      "milestones_url":"https://api.github.com/repos/jdel/acdc/milestones{/number}",
-      "notifications_url":"https://api.github.com/repos/jdel/acdc/notifications{?since,all,participating}",
-      "labels_url":"https://api.github.com/repos/jdel/acdc/labels{/name}",
-      "releases_url":"https://api.github.com/repos/jdel/acdc/releases{/id}",
-      "deployments_url":"https://api.github.com/repos/jdel/acdc/deployments",
-      "created_at":"2017-08-17T14:19:02Z",
-      "updated_at":"2017-08-17T14:21:30Z",
-      "pushed_at":"2017-08-22T20:49:51Z",
-      "git_url":"git://github.com/jdel/acdc.git",
-      "ssh_url":"git@github.com:jdel/acdc.git",
-      "clone_url":"https://github.com/jdel/acdc.git",
-      "svn_url":"https://github.com/jdel/acdc",
-      "homepage":null,
-      "size":89,
-      "stargazers_count":0,
-      "watchers_count":0,
-      "language":"Go",
-      "has_issues":true,
-      "has_projects":true,
-      "has_downloads":true,
-      "has_wiki":true,
-      "has_pages":false,
-      "forks_count":0,
-      "mirror_url":null,
-      "open_issues_count":0,
-      "forks":0,
-      "open_issues":0,
-      "watchers":0,
-      "default_branch":"master"
-   },
-   "sender":{
-      "login":"jdel",
-      "id":1107511,
-      "avatar_url":"https://avatars2.githubusercontent.com/u/1107511?v=4",
-      "gravatar_id":"",
-      "url":"https://api.github.com/users/jdel",
-      "html_url":"https://github.com/jdel",
-      "followers_url":"https://api.github.com/users/jdel/followers",
-      "following_url":"https://api.github.com/users/jdel/following{/other_user}",
-      "gists_url":"https://api.github.com/users/jdel/gists{/gist_id}",
-      "starred_url":"https://api.github.com/users/jdel/starred{/owner}{/repo}",
-      "subscriptions_url":"https://api.github.com/users/jdel/subscriptions",
-      "organizations_url":"https://api.github.com/users/jdel/orgs",
-      "repos_url":"https://api.github.com/users/jdel/repos",
-      "events_url":"https://api.github.com/users/jdel/events{/privacy}",
-      "received_events_url":"https://api.github.com/users/jdel/received_events",
-      "type":"User",
-      "site_admin":false
-   }
-}
-*/
 type githubPayload struct {
 	Ref     string      `json:"ref"`
 	Before  string      `json:"before"`
@@ -311,87 +175,61 @@ func outputGithubPayload(message, context string) githubCallbackPayload {
 	}
 }
 
-func checkMAC(message, messageMAC, key []byte) bool {
-	mac := hmac.New(sha256.New, key)
-	mac.Write(message)
-	expectedMAC := mac.Sum(nil)
-	fmt.Println(string(expectedMAC))
-	fmt.Println(string(messageMAC))
-	return hmac.Equal(messageMAC, expectedMAC)
+func checkHexHMacSha1Signature(secret, message, expectedSum []byte) bool {
+	hash := hmac.New(sha1.New, secret)
+	hash.Write(message)
+	if hex.EncodeToString(hash.Sum(nil)) != string(expectedSum) {
+		return false
+	}
+	return true
 }
 
-// veiryfyHMAC generated the HMAC signature with Hash and secret and compare with the provided digest
-func verifyHMAC(h func() hash.Hash, secret string, payload string, digest []byte) bool {
-	hHash := hmac.New(h, []byte(secret))
-	_, _ = hHash.Write([]byte(payload)) // assignations are required not to get an errcheck issue (linter)
-	computedDigest := hHash.Sum(nil)
-
-	return hmac.Equal(computedDigest, digest)
+func findGithubMatchingKey(expectedSum, message []byte) api.Key {
+	keys, _ := api.AllAPIKeys()
+	for _, key := range keys {
+		if checkHexHMacSha1Signature([]byte(key.Unique), message, expectedSum) {
+			return api.FindKey(key.Unique)
+		}
+	}
+	return api.Key{}
 }
 
 // RouteGithub handles incoming github pushes
 func RouteGithub(w http.ResponseWriter, r *http.Request) {
-	var output []byte
-	// var incomingPayload githubPayload
-
-	// event := r.Header["X-GitHub-Event"]
-	// signature := r.Header["X-Hub-Signature"]
-
-	if r.Header.Get("X-GitHub-Event") != "push" {
+	var incomingPayload githubPayload
+	if r.Header.Get("X-Github-Event") != "push" {
 		return
 	}
 
+	actions := strings.Split(r.URL.Query().Get("actions"), " ")
 	body, _ := ioutil.ReadAll(r.Body)
-
-	if !checkMAC(body, []byte(r.Header.Get("X-Hub-Signature")), []byte("cakecakecake")) {
-		jsonOutput(w, http.StatusOK,
-			outputGithubPayload("Invalid signature", ""))
+	key := findGithubMatchingKey([]byte(r.Header.Get("X-Hub-Signature")[5:]), body)
+	if key.Unique == "" {
+		jsonOutput(w, http.StatusNotFound,
+			outputGithubPayload("Could not get a matching key", ""))
 		return
 	}
 
-	// apiKey := mux.Vars(r)["apiKey"]
-	// tag := mux.Vars(r)["tag"]
+	decoder := json.NewDecoder(r.Body)
+	defer r.Body.Close()
+	decoder.Decode(&incomingPayload)
 
-	// key := api.FindKey(apiKey)
-	// if key.Unique == "" {
-	// 	jsonOutput(w, http.StatusInternalServerError,
-	// 		outputKey("Could not get key", apiKey))
-	// 	return
-	// }
+	hookName := r.URL.Query().Get("hook")
 
-	// decoder := json.NewDecoder(r.Body)
-	// err := decoder.Decode(&incomingPayload)
-	// if err != nil {
-	// 	logRoute.Error(err)
-	// }
-	// defer r.Body.Close()
+	hook := key.GetHook(hookName)
+	if hook.Name == "" {
+		logRoute.Error("Cannot find hook", hookName)
+		jsonOutput(w, http.StatusInternalServerError,
+			outputGithubPayload("Could not pull images for hook", hookName))
+		return
+	}
 
-	// hook := key.GetHook("incomingPayload.Repository.Name")
+	if key.IsRemote() {
+		key.Pull()
+	}
 
-	// output, err = hook.Pull().CombinedOutput()
-	// if err != nil {
-	// 	logRoute.Error(string(output), err)
-	// 	jsonOutput(w, http.StatusInternalServerError,
-	// 		outputHook("Could not pull images for hook", hook.Name))
-	// 	return
-	// }
-
-	// output, err = hook.Down().CombinedOutput()
-	// if err != nil {
-	// 	logRoute.Error(string(output), err)
-	// 	jsonOutput(w, http.StatusInternalServerError,
-	// 		outputHook("Could not bring hook down", hook.Name))
-	// 	return
-	// }
-
-	// output, err = hook.Up().CombinedOutput()
-	// if err != nil {
-	// 	logRoute.Error(string(output), err)
-	// 	jsonOutput(w, http.StatusInternalServerError,
-	// 		outputHook("Could not bring hook up", hook.Name))
-	// 	return
-	// }
+	hook.ExecuteSequentially(actions...)
 
 	jsonOutput(w, http.StatusOK,
-		outputGithubPayload(string(output), ""))
+		outputGithubPayload("ok", ""))
 }

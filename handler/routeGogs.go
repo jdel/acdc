@@ -98,7 +98,7 @@ func outputGogsPayload(message, context string) gogsCallbackPayload {
 	}
 }
 
-func checkHexHMacSignature(secret, message, expectedSum []byte) bool {
+func checkHexHMacSha256Signature(secret, message, expectedSum []byte) bool {
 	hash := hmac.New(sha256.New, secret)
 	hash.Write(message)
 	if hex.EncodeToString(hash.Sum(nil)) != string(expectedSum) {
@@ -107,10 +107,10 @@ func checkHexHMacSignature(secret, message, expectedSum []byte) bool {
 	return true
 }
 
-func findMatchingKey(expectedSum, message []byte) api.Key {
+func findGogsMatchingKey(expectedSum, message []byte) api.Key {
 	keys, _ := api.AllAPIKeys()
 	for _, key := range keys {
-		if checkHexHMacSignature([]byte(key.Unique), message, expectedSum) {
+		if checkHexHMacSha256Signature([]byte(key.Unique), message, expectedSum) {
 			return api.FindKey(key.Unique)
 		}
 	}
@@ -125,9 +125,8 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	actions := strings.Split(r.URL.Query().Get("actions"), " ")
-	logRoute.Debugf("Actions: %+v", actions)
 	body, _ := ioutil.ReadAll(r.Body)
-	key := findMatchingKey([]byte(r.Header.Get("X-Gogs-Signature")), body)
+	key := findGogsMatchingKey([]byte(r.Header.Get("X-Gogs-Signature")), body)
 
 	if key.Unique == "" {
 		jsonOutput(w, http.StatusNotFound,
@@ -136,17 +135,14 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&incomingPayload)
-	if err != nil {
-		logRoute.Error(err)
-	}
 	defer r.Body.Close()
+	decoder.Decode(&incomingPayload)
 
 	hookName := r.URL.Query().Get("hook")
 
 	hook := key.GetHook(hookName)
 	if hook.Name == "" {
-		logRoute.Error("Cannot find hook", err)
+		logRoute.Error("Cannot find hook", hookName)
 		jsonOutput(w, http.StatusInternalServerError,
 			outputGogsPayload("Could not pull images for hook", hookName))
 		return
@@ -157,50 +153,6 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	hook.ExecuteSequentially(actions...)
-
-	// if util.IsStringInSlice("pull", actions) {
-	// 	logRoute.Debugf("Pulling %s", hook.Name)
-	// 	output, err = hook.Pull().CombinedOutput()
-	// 	if err != nil {
-	// 		logRoute.Error(string(output), err)
-	// 		jsonOutput(w, http.StatusInternalServerError,
-	// 			outputGogsPayload("Could not pull images for hook", hook.Name))
-	// 		return
-	// 	}
-	// }
-
-	// if util.IsStringInSlice("down", actions) {
-	// 	logRoute.Debugf("Bringing %s down", hook.Name)
-	// 	output, err = hook.Down().CombinedOutput()
-	// 	if err != nil {
-	// 		logRoute.Error(string(output), err)
-	// 		jsonOutput(w, http.StatusInternalServerError,
-	// 			outputGogsPayload("Could not bring hook down", hook.Name))
-	// 		return
-	// 	}
-	// }
-
-	// if util.IsStringInSlice("build", actions) {
-	// 	logRoute.Debugf("Building %s", hook.Name)
-	// 	output, err = hook.Build().CombinedOutput()
-	// 	if err != nil {
-	// 		logRoute.Error(string(output), err)
-	// 		jsonOutput(w, http.StatusInternalServerError,
-	// 			outputGogsPayload("Could not build hook", hook.Name))
-	// 		return
-	// 	}
-	// }
-
-	// if util.IsStringInSlice("up", actions) {
-	// 	logRoute.Debugf("Bringing %s up", hook.Name)
-	// 	output, err = hook.Up().CombinedOutput()
-	// 	if err != nil {
-	// 		logRoute.Error(string(output), err)
-	// 		jsonOutput(w, http.StatusInternalServerError,
-	// 			outputGogsPayload("Could not bring hook up", hook.Name))
-	// 		return
-	// 	}
-	// }
 
 	jsonOutput(w, http.StatusOK,
 		outputGogsPayload("ok", ""))
