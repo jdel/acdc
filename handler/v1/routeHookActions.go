@@ -16,12 +16,17 @@ func RouteHookActions(w http.ResponseWriter, r *http.Request) {
 	if authOK == true {
 		key := api.FindKey(apiKey)
 		hook := key.GetHook(mux.Vars(r)["hookName"])
+		if hook == nil {
+			jsonOutput(w, http.StatusNotFound,
+				outputHook("Could not find hook", mux.Vars(r)["hookName"]))
+			return
+		}
 
 		output, err := hook.ExecuteSequentially(actions...)
 		if err != nil {
 			logRoute.WithField("key", apiKey).Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
-				outputHook("Could not bring hook up", hook.Name))
+				outputHook("Could not execute actions for", hook.Name))
 			return
 		}
 

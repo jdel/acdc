@@ -16,7 +16,7 @@ var apiKeyAddCmd = &cobra.Command{
 	Short: "Delete an api-key",
 	Long:  `Delete an api-key`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if key := api.FindKey(args[0]); key.Unique == "" {
+		if key := api.FindKey(args[0]); key == nil {
 			logCmd.Fatalf("Cannot find key %s", args[0])
 		} else {
 			if err := key.Delete(); err != nil {

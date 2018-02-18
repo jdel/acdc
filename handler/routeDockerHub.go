@@ -56,9 +56,9 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	tag := r.URL.Query().Get("tag")
 
 	key := api.FindKey(apiKey)
-	if key.Unique == "" {
+	if key == nil {
 		jsonOutput(w, http.StatusUnauthorized,
-			outputDockerHubPayload("Could not get key", apiKey))
+			outputDockerHubPayload("Could not find key", apiKey))
 		return
 	}
 
@@ -77,10 +77,16 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if hookName == "" {
-	  hookName = incomingPayload.Repository.Name
+		hookName = incomingPayload.Repository.Name
 	}
 
 	hook := key.GetHook(hookName)
+	if hook == nil {
+		logRoute.Error("Cannot find hook", hookName)
+		jsonOutput(w, http.StatusInternalServerError,
+			outputGogsPayload("Could not find hook", hookName))
+		return
+	}
 
 	output, err = hook.Pull().CombinedOutput()
 	if err != nil {

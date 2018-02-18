@@ -14,6 +14,11 @@ func RouteHookDelete(w http.ResponseWriter, r *http.Request) {
 	if authOK == true {
 		key := api.FindKey(apiKey)
 		hook := key.GetHook(mux.Vars(r)["hookName"])
+		if hook == nil {
+			jsonOutput(w, http.StatusNotFound,
+				outputHook("Could not find hook", mux.Vars(r)["hookName"]))
+			return
+		}
 
 		if key.IsRemote() {
 			logRoute.WithField("key", key.Unique).Error("Cannot create hook on a remote key")

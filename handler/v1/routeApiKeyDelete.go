@@ -13,8 +13,7 @@ func RouteAPIKeyDelete(w http.ResponseWriter, r *http.Request) {
 	authOK := api.BasicAuthMaster(w, r)
 
 	if authOK == true {
-		apiKey := mux.Vars(r)["apiKey"]
-		key := api.FindKey(apiKey)
+		key := api.FindKey(mux.Vars(r)["apiKey"])
 		err := key.Delete()
 		if err != nil {
 			logRoute.WithField("route", "RouteAPIKeyDelete").Error(err)

@@ -18,6 +18,9 @@ type Key struct {
 	Remote string
 }
 
+// Keys is a map of key indexed by unique
+type Keys map[string]*Key
+
 // NewKey creates a new key with a known unique or generates a random one
 // if unique is "", remote param can be "" for a local key
 func NewKey(unique, remote string) (*Key, error) {
@@ -37,7 +40,7 @@ func NewKey(unique, remote string) (*Key, error) {
 }
 
 // Delete deletes the specified key
-func (key Key) Delete() error {
+func (key *Key) Delete() error {
 	var err error
 	var keyPath = filepath.Join(cfg.GetComposeDir(), key.Unique)
 	if err = os.RemoveAll(keyPath); err != nil {
@@ -61,14 +64,14 @@ func newKey(unique, remote string) *Key {
 }
 
 // FindKey returns a Key from the unique string
-func FindKey(unique string) Key {
+func FindKey(unique string) *Key {
 	apiKey := Key{
 		Unique: unique,
 		Remote: "",
 	}
 
 	if !apiKey.Exists() {
-		return Key{"", ""}
+		return nil
 	}
 
 	ok, l := apiKey.GetSymlink()
@@ -86,12 +89,12 @@ func FindKey(unique string) Key {
 		}
 	}
 
-	return apiKey
+	return &apiKey
 }
 
 // Create creates the local API Key
 // (creates a directory under compose-dir/key)
-func (key Key) create() {
+func (key *Key) create() {
 	var dir string
 	var err error
 
@@ -115,7 +118,7 @@ func (key Key) create() {
 }
 
 // Pull does a git pull of the remote associated with the key
-func (key Key) Pull() (string, error) {
+func (key *Key) Pull() (string, error) {
 	var headShortHash string
 
 	repo, err := key.getRemote()
@@ -157,18 +160,18 @@ func (key Key) Pull() (string, error) {
 }
 
 // IsRemote returns true if the key is linked to git repo
-func (key Key) getRemote() (*git.Repository, error) {
+func (key *Key) getRemote() (*git.Repository, error) {
 	var repoPath = filepath.Join(cfg.GetComposeDir(), key.Unique)
 	return git.PlainOpen(repoPath)
 }
 
 // Exists returns true if the key is linked to git repo
-func (key Key) Exists() bool {
+func (key *Key) Exists() bool {
 	return util.FileExists(filepath.Join(cfg.GetComposeDir(), key.Unique))
 }
 
 // IsRemote returns true if the key is linked to git repo
-func (key Key) IsRemote() bool {
+func (key *Key) IsRemote() bool {
 	if key.Remote != "" {
 		return true
 	}
@@ -176,8 +179,8 @@ func (key Key) IsRemote() bool {
 }
 
 // AllHooks returns all hooks (.yml files) associated with the key
-func (key Key) AllHooks() []Hook {
-	var hooks []Hook
+func (key *Key) AllHooks() Hooks {
+	var hooks []*Hook
 	var err error
 	var children []os.FileInfo
 
@@ -197,8 +200,8 @@ func (key Key) AllHooks() []Hook {
 }
 
 // AllAPIKeys lists all API Keys
-func AllAPIKeys() (map[string]Key, error) {
-	var keys = make(map[string]Key)
+func AllAPIKeys() (Keys, error) {
+	var keys = make(Keys)
 	var err error
 	var children []os.FileInfo
 
@@ -217,7 +220,7 @@ func AllAPIKeys() (map[string]Key, error) {
 }
 
 // GetSymlink returns true and the destination if the key is a symlink
-func (key Key) GetSymlink() (bool, string) {
+func (key *Key) GetSymlink() (bool, string) {
 	s, err := os.Readlink(filepath.Join(cfg.GetComposeDir(), key.Unique))
 	if err != nil {
 		return false, s

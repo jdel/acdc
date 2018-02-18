@@ -3,6 +3,7 @@ package handler
 import (
 	"crypto/hmac"
 	"crypto/sha1"
+	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
@@ -178,20 +179,17 @@ func outputGithubPayload(message, context string) githubCallbackPayload {
 func checkHexHMacSha1Signature(secret, message, expectedSum []byte) bool {
 	hash := hmac.New(sha1.New, secret)
 	hash.Write(message)
-	if hex.EncodeToString(hash.Sum(nil)) != string(expectedSum) {
-		return false
-	}
-	return true
+	return subtle.ConstantTimeCompare([]byte(hex.EncodeToString(hash.Sum(nil))), expectedSum) == 1
 }
 
-func findGithubMatchingKey(expectedSum, message []byte) api.Key {
+func findGithubMatchingKey(expectedSum, message []byte) *api.Key {
 	keys, _ := api.AllAPIKeys()
 	for _, key := range keys {
 		if checkHexHMacSha1Signature([]byte(key.Unique), message, expectedSum) {
 			return api.FindKey(key.Unique)
 		}
 	}
-	return api.Key{}
+	return nil
 }
 
 // RouteGithub handles incoming github pushes
@@ -201,12 +199,11 @@ func RouteGithub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	actions := strings.Split(r.URL.Query().Get("actions"), " ")
 	body, _ := ioutil.ReadAll(r.Body)
 	key := findGithubMatchingKey([]byte(r.Header.Get("X-Hub-Signature")[5:]), body)
 	if key.Unique == "" {
 		jsonOutput(w, http.StatusNotFound,
-			outputGithubPayload("Could not get a matching key", ""))
+			outputGithubPayload("Could not find a matching key", ""))
 		return
 	}
 
@@ -217,10 +214,10 @@ func RouteGithub(w http.ResponseWriter, r *http.Request) {
 	hookName := r.URL.Query().Get("hook")
 
 	hook := key.GetHook(hookName)
-	if hook.Name == "" {
+	if hook == nil {
 		logRoute.Error("Cannot find hook", hookName)
 		jsonOutput(w, http.StatusInternalServerError,
-			outputGithubPayload("Could not pull images for hook", hookName))
+			outputGithubPayload("Could not find hook", hookName))
 		return
 	}
 
@@ -228,8 +225,9 @@ func RouteGithub(w http.ResponseWriter, r *http.Request) {
 		key.Pull()
 	}
 
-	hook.ExecuteSequentially(actions...)
+	actions := strings.Split(r.URL.Query().Get("actions"), " ")
+	ticket, _ := hook.ExecuteSequentially(actions...)
 
 	jsonOutput(w, http.StatusOK,
-		outputGithubPayload("ok", ""))
+		outputGithubPayload("queued", ticket))
 }

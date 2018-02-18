@@ -3,6 +3,7 @@ package handler
 import (
 	"crypto/hmac"
 	"crypto/sha256"
+	"crypto/subtle"
 	"encoding/hex"
 	"encoding/json"
 	"io/ioutil"
@@ -101,20 +102,17 @@ func outputGogsPayload(message, context string) gogsCallbackPayload {
 func checkHexHMacSha256Signature(secret, message, expectedSum []byte) bool {
 	hash := hmac.New(sha256.New, secret)
 	hash.Write(message)
-	if hex.EncodeToString(hash.Sum(nil)) != string(expectedSum) {
-		return false
-	}
-	return true
+	return subtle.ConstantTimeCompare([]byte(hex.EncodeToString(hash.Sum(nil))), expectedSum) == 1
 }
 
-func findGogsMatchingKey(expectedSum, message []byte) api.Key {
+func findGogsMatchingKey(expectedSum, message []byte) *api.Key {
 	keys, _ := api.AllAPIKeys()
 	for _, key := range keys {
 		if checkHexHMacSha256Signature([]byte(key.Unique), message, expectedSum) {
 			return api.FindKey(key.Unique)
 		}
 	}
-	return api.Key{}
+	return nil
 }
 
 // RouteGogs handles incoming gogs pushes
@@ -124,13 +122,12 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	actions := strings.Split(r.URL.Query().Get("actions"), " ")
 	body, _ := ioutil.ReadAll(r.Body)
 	key := findGogsMatchingKey([]byte(r.Header.Get("X-Gogs-Signature")), body)
 
 	if key.Unique == "" {
 		jsonOutput(w, http.StatusNotFound,
-			outputGogsPayload("Could not get a matching key", ""))
+			outputGogsPayload("Could not find a matching key", ""))
 		return
 	}
 
@@ -141,10 +138,10 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 	hookName := r.URL.Query().Get("hook")
 
 	hook := key.GetHook(hookName)
-	if hook.Name == "" {
+	if hook == nil {
 		logRoute.Error("Cannot find hook", hookName)
 		jsonOutput(w, http.StatusInternalServerError,
-			outputGogsPayload("Could not pull images for hook", hookName))
+			outputGogsPayload("Could not find hook", hookName))
 		return
 	}
 
@@ -152,6 +149,7 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 		key.Pull()
 	}
 
+	actions := strings.Split(r.URL.Query().Get("actions"), " ")
 	hook.ExecuteSequentially(actions...)
 
 	jsonOutput(w, http.StatusOK,

@@ -34,16 +34,16 @@ func RouteSlack(w http.ResponseWriter, r *http.Request) {
 	}
 
 	key := api.FindKey(apiKey)
-	if key.Unique == "" {
+	if key == nil {
 		jsonOutput(w, http.StatusOK,
-			slackCallbackPayload("Could not get key", "acdc"))
+			slackCallbackPayload("Could not find key", "acdc"))
 		return
 	}
 
 	hook := key.GetHook(hookName)
-	if hook.Name == "" {
+	if hook == nil {
 		jsonOutput(w, http.StatusOK,
-			slackCallbackPayload("Could not get hook", hookName))
+			slackCallbackPayload("Could not find hook", hookName))
 		return
 	}
 
