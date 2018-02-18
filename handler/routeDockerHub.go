@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/jdel/acdc/api"
 )
@@ -49,12 +50,8 @@ func outputDockerHubPayload(message, context string) dockerHubCallbackPayload {
 
 // RouteDockerHub handles incoming docker hub hooks
 func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
-	var output []byte
 	var incomingPayload dockerHubPayload
-	hookName := r.URL.Query().Get("hook")
 	apiKey := r.URL.Query().Get("apiKey")
-	tag := r.URL.Query().Get("tag")
-
 	key := api.FindKey(apiKey)
 	if key == nil {
 		jsonOutput(w, http.StatusUnauthorized,
@@ -70,12 +67,14 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
+	tag := r.URL.Query().Get("tag")
 	if tag != incomingPayload.PushData.Tag {
 		jsonOutput(w, http.StatusNotFound,
 			fmt.Sprintln("Ignoring tag", incomingPayload.PushData.Tag, "does not match", tag))
 		return
 	}
 
+	hookName := r.URL.Query().Get("hook")
 	if hookName == "" {
 		hookName = incomingPayload.Repository.Name
 	}
@@ -88,22 +87,9 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err = hook.Pull().CombinedOutput()
-	if err != nil {
-		logRoute.WithField("route", "RouteDockerHub").Error(string(output), err)
-		jsonOutput(w, http.StatusNotFound,
-			outputDockerHubPayload("Could not pull images for hook", hook.Name))
-		return
-	}
-
-	output, err = hook.Up().CombinedOutput()
-	if err != nil {
-		logRoute.WithField("route", "RouteDockerHub").Error(string(output), err)
-		jsonOutput(w, http.StatusInternalServerError,
-			outputDockerHubPayload("Could not bring hook up", hook.Name))
-		return
-	}
+	actions := strings.Split(r.URL.Query().Get("actions"), " ")
+	ticket, _ := hook.ExecuteSequentially(actions...)
 
 	jsonOutput(w, http.StatusOK,
-		outputDockerHubPayload("Upgraded hook", hook.Name))
+		outputGithubPayload("queued", ticket))
 }
