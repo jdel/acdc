@@ -60,7 +60,6 @@ func (hook Hook) callMethod(m string) (string, error) {
 	out := method.Call([]reflect.Value{})
 	cmd := out[0].Interface().(*exec.Cmd)
 	o, err := cmd.CombinedOutput()
-	logAPI.Debugf("output: %v", string(o))
 	return string(o), err
 }
 

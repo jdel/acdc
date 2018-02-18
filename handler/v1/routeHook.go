@@ -11,7 +11,7 @@ import (
 // RouteHookActions handles docker-compose actions
 func RouteHookActions(w http.ResponseWriter, r *http.Request) {
 	apiKey, authOK := api.BasicAuth(w, r)
-	actions := strings.Split(mux.Vars(r)["actions"], " ")
+	actions := strings.Split(mux.Vars(r)["actions"], "+")
 
 	if authOK == true {
 		key := api.FindKey(apiKey)
