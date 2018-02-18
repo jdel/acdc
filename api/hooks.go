@@ -52,6 +52,7 @@ func (hook Hook) callMethod(m string) (string, error) {
 	if !util.IsStringInSlice(m, allowedActions) {
 		return "", fmt.Errorf("Invalid action %s", m)
 	}
+
 	method := reflect.ValueOf(&hook).MethodByName(strings.Title(m))
 	if method.Kind() == reflect.Invalid {
 		return "", fmt.Errorf("Unknown method for action %s", m)
