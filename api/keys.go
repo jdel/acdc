@@ -71,6 +71,11 @@ func FindKey(unique string) Key {
 		return Key{"", ""}
 	}
 
+	ok, l := apiKey.GetSymlink()
+	if ok {
+		apiKey.Unique = filepath.Base(l)
+	}
+
 	remote, err := apiKey.getRemote()
 	if err == nil {
 		origin, err := remote.Remote("origin")
@@ -209,4 +214,13 @@ func AllAPIKeys() (map[string]Key, error) {
 		}
 	}
 	return keys, err
+}
+
+// GetSymlink returns true and the destination if the key is a symlink
+func (key Key) GetSymlink() (bool, string) {
+	s, err := os.Readlink(filepath.Join(cfg.GetComposeDir(), key.Unique))
+	if err != nil {
+		return false, s
+	}
+	return true, s
 }
