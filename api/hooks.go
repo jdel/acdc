@@ -103,7 +103,7 @@ func (hook *Hook) ExecuteSequentially(actions ...string) (string, error) {
 	var o string
 	var output bytes.Buffer
 	for _, a := range actions {
-		logAPI.Debugf("Queing %s for %s ok %s", a, hook.Name, hook.APIKey)
+		logAPI.Debugf("Queing %s on %s for key %s", a, hook.Name, hook.APIKey)
 		o, err = hook.callMethod(a)
 		output.WriteString(o)
 	}
@@ -117,8 +117,8 @@ func (hook *Hook) ExecuteSequentiallyNow(actions ...string) (string, error) {
 	var o string
 	var output bytes.Buffer
 	for _, a := range actions {
-		logAPI.Debugf("Queing %s for %s ok %s", a, hook.Name, hook.APIKey)
-		o, err = hook.callMethod(a)
+		logAPI.Debugf("Queing %s on %s for key %s", a, hook.Name, hook.APIKey)
+		o, err = hook.callMethodNow(a)
 		output.WriteString(o)
 	}
 
