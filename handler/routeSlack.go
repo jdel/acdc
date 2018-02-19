@@ -47,7 +47,7 @@ func RouteSlack(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := hook.ExecuteSequentially(strings.Split(args[2], "+")...)
+	output, err := hook.ExecuteSequentiallyNow(strings.Split(args[2], "+")...)
 	if err != nil {
 		jsonOutput(w, http.StatusInternalServerError,
 			slackCallbackPayload(err.Error(), hook.Name))

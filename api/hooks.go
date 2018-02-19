@@ -68,8 +68,51 @@ func (hook *Hook) callMethod(m string) (string, error) {
 	return string(ticket), nil
 }
 
-// ExecuteSequentially will execute the commands sequentually and return output
+func (hook *Hook) callMethodNow(m string) (string, error) {
+	allowedActions := []string{
+		"pull",
+		"up",
+		"down",
+		"ps",
+		"logs",
+		"start",
+		"stop",
+		"restart",
+		"build",
+		"config",
+		"kill",
+	}
+
+	if !util.IsStringInSlice(m, allowedActions) {
+		return "", fmt.Errorf("Invalid action %s", m)
+	}
+
+	method := reflect.ValueOf(hook).MethodByName(strings.Title(m))
+	if method.Kind() == reflect.Invalid {
+		return "", fmt.Errorf("Unknown method for action %s", m)
+	}
+	out := method.Call([]reflect.Value{})
+	cmd := out[0].Interface().(*exec.Cmd)
+	o, err := cmd.CombinedOutput()
+	return string(o), err
+}
+
+// ExecuteSequentially will queue the commands sequentually and return output
 func (hook *Hook) ExecuteSequentially(actions ...string) (string, error) {
+	var err error
+	var o string
+	var output bytes.Buffer
+	for _, a := range actions {
+		logAPI.Debugf("Queing %s for %s ok %s", a, hook.Name, hook.APIKey)
+		o, err = hook.callMethod(a)
+		output.WriteString(o)
+	}
+
+	return output.String(), err
+}
+
+// ExecuteSequentiallyNow will execute the commands immediately and return output
+func (hook *Hook) ExecuteSequentiallyNow(actions ...string) (string, error) {
 	var err error
 	var o string
 	var output bytes.Buffer
