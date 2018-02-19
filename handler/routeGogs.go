@@ -88,13 +88,15 @@ type gogsPayload struct {
 }
 
 type gogsCallbackPayload struct {
-	Message string `json:"message"`
-	Context string `json:"context,omitempty"`
+	Message []string `json:"message"`
+	Context string   `json:"context,omitempty"`
 }
 
 func outputGogsPayload(message, context string) gogsCallbackPayload {
+	logRoute.Debugf("message: ", message)
+	logRoute.Debugf("cut message: ", message[:len(message)-2])
 	return gogsCallbackPayload{
-		Message: message,
+		Message: strings.Split(message, "\n"),
 		Context: context,
 	}
 }
@@ -150,8 +152,8 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 	}
 
 	actions := strings.Split(r.URL.Query().Get("actions"), " ")
-	hook.ExecuteSequentially(actions...)
+	tickets, _ := hook.ExecuteSequentially(actions...)
 
 	jsonOutput(w, http.StatusOK,
-		outputGogsPayload("ok", ""))
+		outputGithubPayload(tickets[:len(tickets)-1], "queued"))
 }

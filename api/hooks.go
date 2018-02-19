@@ -7,6 +7,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 
 	"github.com/jdel/acdc/cfg"
@@ -65,7 +66,7 @@ func (hook *Hook) callMethod(m string) (string, error) {
 	ticket := util.NextTicket()
 	util.InputQueue <- util.QueueItem{Key: hook.APIKey, Ticket: ticket, Cmd: cmd}
 	// o, err := cmd.CombinedOutput()
-	return string(ticket), nil
+	return strconv.Itoa(ticket), nil
 }
 
 func (hook *Hook) callMethodNow(m string) (string, error) {
@@ -97,7 +98,7 @@ func (hook *Hook) callMethodNow(m string) (string, error) {
 	return string(o), err
 }
 
-// ExecuteSequentially will queue the commands sequentually and return output
+// ExecuteSequentially will queue the commands sequentually and return ticket numbers
 func (hook *Hook) ExecuteSequentially(actions ...string) (string, error) {
 	var err error
 	var o string
@@ -105,7 +106,7 @@ func (hook *Hook) ExecuteSequentially(actions ...string) (string, error) {
 	for _, a := range actions {
 		logAPI.Debugf("Queing %s on %s for key %s", a, hook.Name, hook.APIKey)
 		o, err = hook.callMethod(a)
-		output.WriteString(o)
+		output.WriteString(fmt.Sprintf("%s\n", o))
 	}
 
 	return output.String(), err

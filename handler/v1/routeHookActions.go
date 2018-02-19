@@ -22,7 +22,7 @@ func RouteHookActions(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		output, err := hook.ExecuteSequentially(actions...)
+		tickets, err := hook.ExecuteSequentially(actions...)
 		if err != nil {
 			logRoute.WithField("key", apiKey).Error(err)
 			jsonOutput(w, http.StatusInternalServerError,
@@ -31,6 +31,6 @@ func RouteHookActions(w http.ResponseWriter, r *http.Request) {
 		}
 
 		jsonOutput(w, http.StatusOK,
-			outputHook(string(output), hook.Name))
+			outputHook(tickets[:len(tickets)-1], hook.Name))
 	}
 }

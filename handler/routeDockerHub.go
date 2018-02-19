@@ -37,13 +37,13 @@ type dockerHubPayload struct {
 }
 
 type dockerHubCallbackPayload struct {
-	Message string `json:"message"`
-	Context string `json:"context,omitempty"`
+	Message []string `json:"message"`
+	Context string   `json:"context,omitempty"`
 }
 
 func outputDockerHubPayload(message, context string) dockerHubCallbackPayload {
 	return dockerHubCallbackPayload{
-		Message: message,
+		Message: strings.Split(message, "\n"),
 		Context: context,
 	}
 }
@@ -62,10 +62,10 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 
 	err := decoder.Decode(&incomingPayload)
+	defer r.Body.Close()
 	if err != nil {
 		logRoute.WithField("route", "RouteDockerHub").Error(err)
 	}
-	defer r.Body.Close()
 
 	tag := r.URL.Query().Get("tag")
 	if tag != incomingPayload.PushData.Tag {
@@ -88,8 +88,8 @@ func RouteDockerHub(w http.ResponseWriter, r *http.Request) {
 	}
 
 	actions := strings.Split(r.URL.Query().Get("actions"), " ")
-	ticket, _ := hook.ExecuteSequentially(actions...)
+	tickets, _ := hook.ExecuteSequentially(actions...)
 
 	jsonOutput(w, http.StatusOK,
-		outputGithubPayload("queued", ticket))
+		outputGithubPayload(tickets[:len(tickets)-1], "queued"))
 }

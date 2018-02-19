@@ -165,13 +165,13 @@ type githubPayload struct {
 }
 
 type githubCallbackPayload struct {
-	Message string `json:"message"`
-	Context string `json:"context,omitempty"`
+	Message []string `json:"message"`
+	Context string   `json:"context,omitempty"`
 }
 
 func outputGithubPayload(message, context string) githubCallbackPayload {
 	return githubCallbackPayload{
-		Message: message,
+		Message: strings.Split(message, "\n"),
 		Context: context,
 	}
 }
@@ -226,8 +226,8 @@ func RouteGithub(w http.ResponseWriter, r *http.Request) {
 	}
 
 	actions := strings.Split(r.URL.Query().Get("actions"), " ")
-	ticket, _ := hook.ExecuteSequentially(actions...)
+	tickets, _ := hook.ExecuteSequentially(actions...)
 
 	jsonOutput(w, http.StatusOK,
-		outputGithubPayload("queued", ticket))
+		outputGithubPayload(tickets[:len(tickets)-1], "queued"))
 }
