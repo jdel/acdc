@@ -112,4 +112,11 @@ var appRoutes = routes{
 		Pattern:     "/jobs/{ticket}",
 		HandlerFunc: v1.RouteJobs,
 	},
+	route{
+		Name:        "Job",
+		Method:      "GET",
+		PathPrefix:  "/v1",
+		Pattern:     "/jobs",
+		HandlerFunc: v1.RouteAllJobs,
+	},
 }
