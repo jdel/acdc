@@ -158,6 +158,12 @@ func removeEmptyElements(slice []string) []string {
 	return filteredSlice
 }
 
+// GetBuildMemLimit returns the memory limit
+// for docker-compose build
+func GetBuildMemLimit() string {
+	return viper.GetString("docker-compose.build.memlimit")
+}
+
 // GetDockerComposeLocation returns the path
 // for docker-compose
 func GetDockerComposeLocation() string {

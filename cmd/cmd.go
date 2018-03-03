@@ -46,6 +46,7 @@ func init() {
 	// Optional flags
 	RootCmd.PersistentFlags().IntP("port", "p", 8080, "port to listen to")
 	RootCmd.PersistentFlags().String("docker-compose-binary", "", "location of the docker-compose binary, empty for auto-detect")
+	RootCmd.PersistentFlags().String("docker-compose-build-memlimit", "500m", "memory limit when calling docker-compose build")
 	RootCmd.PersistentFlags().String("compose-dir", "compose", "compose directory")
 	RootCmd.PersistentFlags().String("static-dir", "static", "static directory")
 	RootCmd.PersistentFlags().StringP("log-level", "l", "Error", "log level [Error,Warn,Info,Debug]")
@@ -57,6 +58,7 @@ func init() {
 	viper.BindPFlag("acdc.log-level", RootCmd.PersistentFlags().Lookup("log-level"))
 	viper.BindPFlag("acdc.router.static", RootCmd.PersistentFlags().Lookup("static"))
 	viper.BindPFlag("docker-compose.binary", RootCmd.PersistentFlags().Lookup("docker-compose-binary"))
+	viper.BindPFlag("docker-compose.build.memlimit", RootCmd.PersistentFlags().Lookup("docker-compose-build-memlimit"))
 	viper.AutomaticEnv()
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_", "-", "_"))
 }

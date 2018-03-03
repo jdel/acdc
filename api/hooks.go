@@ -141,6 +141,7 @@ func (hook *Hook) Up() *exec.Cmd {
 		append(hook.composeCommonArgs(),
 			"up",
 			"-d",
+			"--no-build",
 		)...,
 	)
 }
@@ -206,7 +207,7 @@ func (hook *Hook) Build() *exec.Cmd {
 			"build",
 			"--no-cache",
 			"--memory",
-			"200m",
+			cfg.GetBuildMemLimit(),
 		)...,
 	)
 }
