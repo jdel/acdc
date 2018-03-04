@@ -127,7 +127,7 @@ func RouteGogs(w http.ResponseWriter, r *http.Request) {
 	body, _ := ioutil.ReadAll(r.Body)
 	key := findGogsMatchingKey([]byte(r.Header.Get("X-Gogs-Signature")), body)
 
-	if key.Unique == "" {
+	if key == nil {
 		jsonOutput(w, http.StatusNotFound,
 			outputGogsPayload("Could not find a matching key", ""))
 		return

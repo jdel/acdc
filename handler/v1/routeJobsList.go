@@ -8,8 +8,8 @@ import (
 	"github.com/jdel/acdc/util"
 )
 
-// RouteAllJobs lists all unfinished jobs
-func RouteAllJobs(w http.ResponseWriter, r *http.Request) {
+// RouteJobsList lists all unfinished jobs
+func RouteJobsList(w http.ResponseWriter, r *http.Request) {
 	_, authOK := api.BasicAuth(w, r)
 
 	if authOK == true {

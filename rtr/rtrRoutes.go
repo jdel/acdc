@@ -117,6 +117,6 @@ var appRoutes = routes{
 		Method:      "GET",
 		PathPrefix:  "/v1",
 		Pattern:     "/jobs",
-		HandlerFunc: v1.RouteAllJobs,
+		HandlerFunc: v1.RouteJobsList,
 	},
 }

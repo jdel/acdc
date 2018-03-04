@@ -201,7 +201,8 @@ func RouteGithub(w http.ResponseWriter, r *http.Request) {
 
 	body, _ := ioutil.ReadAll(r.Body)
 	key := findGithubMatchingKey([]byte(r.Header.Get("X-Hub-Signature")[5:]), body)
-	if key.Unique == "" {
+
+	if key == nil {
 		jsonOutput(w, http.StatusNotFound,
 			outputGithubPayload("Could not find a matching key", ""))
 		return
