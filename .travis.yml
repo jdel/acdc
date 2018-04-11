@@ -13,7 +13,7 @@ before_script:
 - test-reporter before-build
 script:
 - go test -coverprofile c.out
-- pwd && cd && pwd && gox -osarch="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64 windows/386" -output="out/{{.Dir}}-{{.OS}}-{{.Arch}}" -ldflags "-X github.com/jdel/acdc/cfg.Version=$TRAVIS_TAG"
+- ls -alh  && gox -osarch="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64 windows/386" -output="out/{{.Dir}}-{{.OS}}-{{.Arch}}" -ldflags "-X github.com/jdel/acdc/cfg.Version=$TRAVIS_TAG" && ls -alh && ls -alh out
 after_script:
 - test-reporter after-build --coverage-input-type gocov --exit-code $TRAVIS_TEST_RESULT
 deploy:
