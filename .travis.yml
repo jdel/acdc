@@ -17,12 +17,12 @@ script:
 after_script:
 - test-reporter after-build --coverage-input-type gocov --exit-code $TRAVIS_TEST_RESULT
 deploy:
-  skip_cleanup: true
 - provider: bintray
   file: .bintray.json
   user: jdel
   key:
     secure: u2S8ur1GwPGpHW5IWxAUytZwTkYzi6K4Q68evgkkEVfwRreI5LIPILIa/qviiA2yp50khp4mNeieSg6qeXS0CQWqSwzQOVRc8a1j8lFiHoDhhQq/rrpfXZjZdJbKc9J2dyW0c3InBIe6zfmmQXu5ZEa4PtFPKMVRZTHfhCT5Lj4Xc/S8HS5u9q0GB3pmpVzEyeTpaPj9I+Kfl3sFiHtd8j82C/48cfspugvS7qQ1pOn1LyJPha4xTn93vUWi5q5VWd/jUwhOObJZkICq25uwKOk+IG/2SxeEG5SV8/DufZpryRdIaGL8Ti6wVeCPWJWePO5ew6lzgFIcmmXY5ZtsIdfcH3vntxvT8av5vunJNuMQeXw6FeoeZw4yf7B53BReygf4IOL/zuYjk3HzNP5F0B1f0NU5n00v2l83YWCctVhUKQfwr9ki8ctv37FZJ6QvsdyP59F1c//U+2QfSSeN+DxeED/GeoQ4HXb+0ARYItvhCJyQslJaqWmsJ2eetk5DXUownZMUETfpKZReuzMxlU/vO+8ys/nozLvgqZ/s2A9fr0/hm0h2jQbL5QAbmh9B5C+vK3l6MpR29WqWzarhodOzaS9P2Ls++btcgME7tJ3k6uVp/M5B7xqV/vkVl5AhM6fSzRSeNGOSkOUcYA092SewBbnCeW1iT/rx3hwu3Ww=
+  skip_cleanup: true
   on:
     repo: jdel/acdc
     branch: master
