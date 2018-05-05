@@ -44,6 +44,12 @@ var appRoutes = routes{
 		HandlerFunc: handler.RouteGithub,
 	},
 	route{
+		Name:        "Gitlab",
+		Method:      "POST",
+		Pattern:     "/gitlab",
+		HandlerFunc: handler.RouteGitlab,
+	},
+	route{
 		Name:        "Gogs",
 		Method:      "POST",
 		Pattern:     "/gogs",
