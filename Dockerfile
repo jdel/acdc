@@ -1,47 +1,34 @@
-FROM jdel/alpine-glibc:3.6
+FROM golang:1.13-alpine3.10 as builder
 
 ENV GOPATH=/go
 ENV PATH=${GOPATH}/bin:${PATH}
 ENV DOCKER_API_VERSION=
-ARG DOCKER_VERSION=${DOCKER_VERSION:-17.06.2-ce}
-ARG DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION:-1.19.0}
+ARG DOCKER_VERSION=${DOCKER_VERSION:-19.03.5}
+ARG DOCKER_COMPOSE_VERSION=${DOCKER_COMPOSE_VERSION:-1.25.0}
 ARG ACDC_VERSION=${ACDC_VERSION:-master}
 ARG ACDC_COMMIT=
 
+COPY . /src
+
+WORKDIR /src
+
+RUN apk add --update curl gcc build-base \
+ && go get -v ./... \
+ && go test -v ./... \
+ && go build -ldflags "-s -w -X github.com/jdel/acdc/cfg.Version=${ACDC_VERSION}" \
+ && curl -sL https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz | tar xfvz - --strip 1 -C /usr/local/bin/ docker/docker \
+ && curl -sL https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose \
+ && chmod +x /src/acdc /usr/local/bin/docker /usr/local/bin/docker-compose
+
+FROM jdel/alpine-glibc:3.10
 LABEL maintainer=julien@del-piccolo.com
 
-USER root
+COPY --from=builder /src/acdc /usr/local/bin/acdc
+COPY --from=builder /usr/local/bin/docker /usr/local/bin/docker
+COPY --from=builder /usr/local/bin/docker-compose /usr/local/bin/docker-compose
 
-COPY . ${GOPATH}/src/github.com/jdel/acdc
-
-RUN apk add --update curl \
- && apk add --virtual build-dependencies go gcc build-base git openssh-client \
- && curl -sL https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz -o docker.tgz \
- && tar xfvz docker.tgz --strip 1 -C /usr/local/bin/ docker/docker \
- && rm -f docker.tgz \
- && curl -sL https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose \
-#  && curl -sL https://github.com/jdel/acdc/archive/${ACDC_VERSION}.zip -o acdc.zip \
-#  && mkdir -p ${GOPATH}/src/github.com/jdel/ \
-#  && unzip acdc.zip -d ${GOPATH}/src/github.com/jdel/ \
-#  && rm -f acdc.zip \
-#  && mv ${GOPATH}/src/github.com/jdel/acdc-* ${GOPATH}/src/github.com/jdel/acdc \
- && go get -v github.com/golang/dep/cmd/dep \
- && cd $GOPATH/src/github.com/golang/dep/cmd/dep \
- && git checkout tags/v0.4.1 && go install \
- && cd ${GOPATH}/src/github.com/jdel/acdc/ \
- && dep ensure -v -vendor-only \
- && go build -o /usr/local/bin/acdc -ldflags "-X github.com/jdel/acdc/cfg.Version=${ACDC_VERSION}-${ACDC_COMMIT}" \
- && chmod 755 /usr/local/bin/docker /usr/local/bin/docker-compose /usr/local/bin/acdc \
- && apk del build-dependencies \
- && mkdir /home/user/acdc \
- && chown user:user /home/user/acdc \
- && rm -rf /var/cache/apk/* \
- && rm -rf /root/.glide/ \
- && rm -rf ${GOPATH}
- 
-USER user
-
-WORKDIR /home/user/
+RUN mkdir /home/user/acdc \
+ && chown user:user /home/user/acdc
 
 EXPOSE 8080
 

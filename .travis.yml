@@ -1,32 +1,47 @@
 language: go
 go:
-- 1.9
+- 1.13
+
+addons:
+  apt:
+    packages:
+      - python3
+      - python3-pip
+      - python3-setuptools
+      - python3-wheel
+
+cache:
+  directories:
+    - $HOME/.cache/pip
+
+before_install:
+- curl -sSL https://codeclimate.com/downloads/test-reporter/test-reporter-0.6.3-linux-amd64 -o ${GOPATH}/bin/test-reporter
+- chmod +x ${GOPATH}/bin/test-reporter
+- go get -v github.com/mitchellh/gox@v1.0.1
+
 install:
-- go get -v github.com/golang/dep/cmd/dep
-- go get -v github.com/codeclimate/test-reporter
-- go get -v github.com/mitchellh/gox
-- cd $GOPATH/src/github.com/golang/dep/cmd/dep && git checkout tags/v0.4.1 && go install
-- cd $GOPATH/src/github.com/codeclimate/test-reporter && git checkout tags/v0.4.3 && go install
-- cd $GOPATH/src/github.com/jdel/acdc
-- dep ensure -v -vendor-only
+- go get -v ./...
+
 before_script:
 - test-reporter before-build
+
 script:
-- go test -coverprofile c.out
-- gox -osarch="linux/386 linux/amd64 linux/arm darwin/amd64 darwin/386 windows/amd64 windows/386" -output="out/{{.Dir}}-{{.OS}}-{{.Arch}}" -ldflags "-X github.com/jdel/acdc/cfg.Version=$TRAVIS_TAG"
-after_script:
-- test-reporter after-build --coverage-input-type gocov --exit-code $TRAVIS_TEST_RESULT
+- go test -coverprofile c.out ./... -race
+- gox -osarch="linux/386 linux/amd64 linux/arm linux/arm64 darwin/amd64 darwin/386 windows/amd64 windows/386" -output="out/{{.Dir}}-{{.OS}}-{{.Arch}}" -ldflags "-s -w -X github.com/jdel/acdc/cfg.Version=${TRAVIS_BRANCH}"
+
+after_success:
+- test-reporter after-build --coverage-input-type gocov --exit-code ${TRAVIS_TEST_RESULT}
+
 deploy:
-- provider: bintray
-  file: .bintray.json
-  user: jdel
-  key:
-    secure: u2S8ur1GwPGpHW5IWxAUytZwTkYzi6K4Q68evgkkEVfwRreI5LIPILIa/qviiA2yp50khp4mNeieSg6qeXS0CQWqSwzQOVRc8a1j8lFiHoDhhQq/rrpfXZjZdJbKc9J2dyW0c3InBIe6zfmmQXu5ZEa4PtFPKMVRZTHfhCT5Lj4Xc/S8HS5u9q0GB3pmpVzEyeTpaPj9I+Kfl3sFiHtd8j82C/48cfspugvS7qQ1pOn1LyJPha4xTn93vUWi5q5VWd/jUwhOObJZkICq25uwKOk+IG/2SxeEG5SV8/DufZpryRdIaGL8Ti6wVeCPWJWePO5ew6lzgFIcmmXY5ZtsIdfcH3vntxvT8av5vunJNuMQeXw6FeoeZw4yf7B53BReygf4IOL/zuYjk3HzNP5F0B1f0NU5n00v2l83YWCctVhUKQfwr9ki8ctv37FZJ6QvsdyP59F1c//U+2QfSSeN+DxeED/GeoQ4HXb+0ARYItvhCJyQslJaqWmsJ2eetk5DXUownZMUETfpKZReuzMxlU/vO+8ys/nozLvgqZ/s2A9fr0/hm0h2jQbL5QAbmh9B5C+vK3l6MpR29WqWzarhodOzaS9P2Ls++btcgME7tJ3k6uVp/M5B7xqV/vkVl5AhM6fSzRSeNGOSkOUcYA092SewBbnCeW1iT/rx3hwu3Ww=
+- provider: script
   skip_cleanup: true
+  script: bash b2.sh
   on:
-    repo: jdel/acdc
-    branch: master
+    tags: false
+    all_branches: true
+
 - provider: releases
+  skip_cleanup: true
   overwrite: true
   api_key:
     secure: AxvB3PGNVZI5RjpUeW9d/UvtLJiq9e8E1qnEoNi4peaz+lxF26vx7wtKquE/Qb9OnmYz3xqD6l9IfEp6Ng3htmPTltNHSvryryRLnoiPx6ZAOi1smwpigqUgT4Hc+7xY5AAqSjsKY1TtAKB5JnrY3nztfccJ4TP/jhj93oAhjbiOKlJvB/OdlEyxyCSUzH5aUPgAfWY6n4JAe3FzCxAvmOeuEgCPe5Q/D/d7KzaYOoJ+YTb0SYU528KF6EPSgaY7UwfmDK25M7rj25iz3x4AulMf/tXh+th2AsPmZr8eLI07XYoUn805vmDL7sHW0OhHZGVJqPmnxg3Ua3JhM48/HXHWZxN4AGZGsWM+pctPszlRNmD/GVn7Wzv1gsl0bKZ+e487LJySJM6QASkYg2gPk9xsjgBC7lwXvhrnadzJ8ffHlHLKkqHWV8bKB4S+j/8whg/yb9TViU21t/Tw4P0S15BsisxPvwPGmIvdELbYUyZf1KaxNWDuPGM5519NAYdpNPa7MwmVTYlyZNJvuJVTUOgTHbPJq2BLcb2sSan3FlFJ9eHS6PE9HVC3LtbPpf0ByhR+qcAt8Blawp8mUmvfD+PfdVgBNMNJH+o4b59e2T175r8MjMTmFpmnwlujW+T0UmTn/5z9pVyP7HrnPcTP1CRR2q3zzEnbnUw/NmFtkYI=
@@ -36,15 +51,19 @@ deploy:
   - out/acdc-linux-386
   - out/acdc-linux-amd64
   - out/acdc-linux-arm
+  - out/acdc-linux-arm64
   - out/acdc-windows-386.exe
   - out/acdc-windows-amd64.exe
-  skip_cleanup: true
   on:
     repo: jdel/acdc
     tags: true
+
 notifications:
   slack:
     secure: eAEEMIGZNxmFoBcUi8Mi21HOeSyS8PhmByzsWxvL8p9Q2uIIAVQfgB3ozUGRWO1/rpXQveCRRx8LEow2YWt/yr1FWBdWXSh2yinB22c5jc7nayThTLK5HIy9KUpRAfEldx/iIudfveBSrw+jHFzvCrNobKuj85bUEExtU3Ro8hs1CsQ09B8laNSuMOqVWBrFKnmqJHATHpRWRL9ILSI1tv/VtclNlrAYGmH7ezgaHkBzsBJr9GbwQHmKNw+OxXuKHs1k9x8mXYkJrJfZIfiupLDyINo+JhVuDDkZdG6M02MlTZsu1YNecuqA8MVMmkI/YhY+snzONZccVNpar0ApE8jDwp5NyasDYDOqFALRNG1FLgPClWnSMOchNYG0SrOlzwN114Pn6E/pKxUu7ncaId/Uhp/vjgYoIVdYMyIcRUJNEC/j43dI/d+EgE+XLN+bSn6J+9JL90M78cHHX8Acjq8kasu/uGwSPig6k7xnUHTfXHGj7+zudComAVgzsFJdgw6fyb5AJ30aQDGVPCB7PgVMZooQVW0Jdh+omFKrNd2rm3Hs/soGrFvJYSWJVlBwMJ4Xp8tDhUsLsHQ/yrrGqmxfNAptqdVzN6SdEfIX7S8XCppdS1+u/jU0sTXjibX2IqNTWdEKYjoOnMAPtwkaOOzzIYSSCe/HtymlJDGd5a0=
+
 env:
   global:
-    - secure: gXN9q+fbmYJFMnYB85a3yFwQyYEopIlf58S2oDJafGDSxNGYWBU7+2qobDdnfcTIsjDSqvr2df5FVQRhjh2xdR8imbC3HN5fy1L2CmL3z3H4iy8IgkSC08SJMfXBpxgpUy2zlWFl0wRiioe4+0nXlxoyVMxENcv2Qq7w5L7mXoXi6sqWDiAvbUMyzuwuY1+8yRkCeb6CyxUzRsUpktA0n8fd9nf/x8lmHsVZyNlF+2C8GKlAVlgbCD5Z0gSEueMfZN4muzOKiooapdkQK6s5cFopHYdpyq/bNgOAvm7xJITXIXVgQ9BMFzWa85kpzqflx3MmbccbYQLVMrzF+z6kmGuMqdMIlvwHks7U/0xUE7QXLLIz1JAG11VBmyFoygXoG89q1fEAeHBMhgeX246+p7NZT/FqdeV3YLsR7bNbG/Xq8TKJpk0VfcIS6kOSxF51pebvMuqBGcUCwv01sGZ0oEJ/lFccsmPEj6QIg75ZmwySggB9rVh368n+MnUSFCyWFyCoYM5uVVubkg3GWjJoGFfzxU7k0Pv5qvC5s18ys+ZdalYAA0MZ0yeRzFcELlFlRWWCHaY79HkovZjIzL6HzJ4uM5O3/ya1uSGoAr0RE665nkLQ0eaJTVRH/H/zW/imORFI+BTy2TRL2e4PmgvwCsgy4+89E3O9lx9LAxWATIk=
+  - secure: gXN9q+fbmYJFMnYB85a3yFwQyYEopIlf58S2oDJafGDSxNGYWBU7+2qobDdnfcTIsjDSqvr2df5FVQRhjh2xdR8imbC3HN5fy1L2CmL3z3H4iy8IgkSC08SJMfXBpxgpUy2zlWFl0wRiioe4+0nXlxoyVMxENcv2Qq7w5L7mXoXi6sqWDiAvbUMyzuwuY1+8yRkCeb6CyxUzRsUpktA0n8fd9nf/x8lmHsVZyNlF+2C8GKlAVlgbCD5Z0gSEueMfZN4muzOKiooapdkQK6s5cFopHYdpyq/bNgOAvm7xJITXIXVgQ9BMFzWa85kpzqflx3MmbccbYQLVMrzF+z6kmGuMqdMIlvwHks7U/0xUE7QXLLIz1JAG11VBmyFoygXoG89q1fEAeHBMhgeX246+p7NZT/FqdeV3YLsR7bNbG/Xq8TKJpk0VfcIS6kOSxF51pebvMuqBGcUCwv01sGZ0oEJ/lFccsmPEj6QIg75ZmwySggB9rVh368n+MnUSFCyWFyCoYM5uVVubkg3GWjJoGFfzxU7k0Pv5qvC5s18ys+ZdalYAA0MZ0yeRzFcELlFlRWWCHaY79HkovZjIzL6HzJ4uM5O3/ya1uSGoAr0RE665nkLQ0eaJTVRH/H/zW/imORFI+BTy2TRL2e4PmgvwCsgy4+89E3O9lx9LAxWATIk=
+  - secure: gTYUA/njZAk4lpocnhPIskBNQc9Eic8xd4fHBZ62/IB6WMbIAo5OktbMW1/EUQtNMWzwIV9we5kOR52mywPmqpDEjKzHlaDTgFqZJlvw2RD/YPjDL7ebeUBdcMNZomZNdzh5vjZG/G0NRjLlfvrbCJeyS3uAhuhfASFkAvd/wqmw6jW5kfExLkd8QwIF30zfJDOYpBxHw6aHmOwpSVP+PvgeVv/ZJJJRbbq1XQL4iTenfq4njWlefs7+33hbo1ymXm9uGwIzCDkLXNG5RY0F5TmgY3ZN3vVRom6Xol/KrI6jZL66o7dgKFGkgfFn69K+s7wSvvE785i5O1Tkq6tvvtrwzgexRcoDa6o/7sbHMA8yUG1mpka4TMaL0YYL/iGx4C6isLLRA0PjURFdHBpBGrl/4re0OYcSxDuUabC4zE1Dn+jCJ44iZr0rtogT9Fs1vwqx5GAQV1K+Z4XQRclA0oTQqICW942liT1UA1PZ2VMXc5thltOmnxtDq+X0blIcjhSxYOwVGc63UxqLoxa1t4EXMXE2aoUXFGQfr8FUl6xyToyDKZMXl0DycqVrfEy4sBxAb6w0r37ZL9Zd5AdVJ1TLz1PJuJSw6Ji3xVuD6s7ehguWVWU95EIn6HIG1vwvY4pd33d4xuEjRgr1d+dBw2y6m3/SMTQXrfXsc1MGhzQ=
+  - secure: m474ABjm6YIAKm4HwrV2XWz+BNN4yqs2cICY8fJXCeKFRLCfv4gEyPA6kDfLvKEGRh6VzMsnctn9pU+SLL3p9cSS/3lsIIFAPc90hYkn5sb7wOmSrFju7FYyFdIfgMwxEqNn1BWN5a2MTuoF2s3EmEfhIBv9sKW41RchQOB/oPD3A83TPaqnXtcNcvYry5/I51xiAr3sxRiM9h/0e8/rGCdAaCcAaWpcsz/PUfxhUfFPQUj2WNHovHPnqYLnWZcaKqoUxohisQfZVjO9aSc4fdznkyaJhNu4FOt4P7XZV7Q4E474A8IS3Z9KC0IpH1Y5GFUgwKraB30a/RK4uBT5zJU0n4JPOWf/w6R56bhR0MDrVQxKHNSkUI/nhfJrliprwqU/OjsIBKKf8NcxeTH3GtPEe+rcbainWjI7Wb27GuoZQUrHu4B5bVMZhFgwhOf5wNZqn0pHfOLLaCDM/p1loAItjq4cV+A4R0r/EEDHCAPrQfitG6aU0GNkE+r6FS/E8R7LZTAYPq5lsdyTlyIrZ8HF4iUyUpNFXCLvhAmjQW5D+qREC+rYSTK+5a1zzPPrxnoT1fyzKP1kKdOhSi+n6iv1NH72e9HkSp9wl73uKCPDRtuHP64/SacZrUENGB7aZrwhAS7AHOYtQPU3FtKpuUf0gKUD5Q6W1sBBl0aPeOw=

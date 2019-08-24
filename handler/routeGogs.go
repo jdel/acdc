@@ -93,8 +93,8 @@ type gogsCallbackPayload struct {
 }
 
 func outputGogsPayload(message, context string) gogsCallbackPayload {
-	logRoute.Debugf("message: ", message)
-	logRoute.Debugf("cut message: ", message[:len(message)-2])
+	logRoute.Debugf("message: %s", message)
+	logRoute.Debugf("cut message: %s", message[:len(message)-2])
 	return gogsCallbackPayload{
 		Message: strings.Split(message, "\n"),
 		Context: context,
