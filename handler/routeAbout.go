@@ -1,9 +1,10 @@
-package handler
+package handler // import jdel.org/acdc/handler
 
 import (
+	"time"
 	"net/http"
 
-	"github.com/jdel/acdc/cfg"
+	"jdel.org/acdc/cfg"
 )
 
 // RouteAbout displays some information about
@@ -14,13 +15,13 @@ func RouteAbout(w http.ResponseWriter, r *http.Request) {
 		Version    string `json:"version"`
 		Maintainer string `json:"maintainer"`
 		License    string `json:"license"`
-		Year       uint   `json:"year"`
+		Year       int    `json:"year"`
 	}{
 		"acdc",
 		cfg.Version,
 		"jdel",
 		"GNU GPL v3",
-		2017,
+		time.Now().Year(),
 	}
 	jsonOutput(w, http.StatusOK, about)
 }

@@ -1,11 +1,11 @@
-package handler
+package handler // import jdel.org/acdc/handler
 
 import (
 	"fmt"
 	"net/http"
 	"strings"
 
-	"github.com/jdel/acdc/api"
+	"jdel.org/acdc/api"
 )
 
 /*

@@ -1,4 +1,4 @@
-package main
+package main // import jdel.org/acdc/main
 
 import (
 	"testing"

@@ -15,7 +15,7 @@ WORKDIR /src
 RUN apk add --update curl gcc build-base \
  && go get -v ./... \
  && go test -v ./... \
- && go build -ldflags "-s -w -X github.com/jdel/acdc/cfg.Version=${ACDC_VERSION}" \
+ && go build -ldflags "-s -w -X jdel.org/acdc/cfg.Version=${ACDC_VERSION}" \
  && curl -sL https://download.docker.com/linux/static/stable/x86_64/docker-${DOCKER_VERSION}.tgz | tar xfvz - --strip 1 -C /usr/local/bin/ docker/docker \
  && curl -sL https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-Linux-x86_64 -o /usr/local/bin/docker-compose \
  && chmod +x /src/acdc /usr/local/bin/docker /usr/local/bin/docker-compose

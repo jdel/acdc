@@ -1,4 +1,4 @@
-package cmd
+package cmd // import jdel.org/acdc/cmd
 
 import (
 	"github.com/spf13/cobra"

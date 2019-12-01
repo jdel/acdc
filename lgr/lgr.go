@@ -1,4 +1,4 @@
-package lgr
+package lgr // import jdel.org/acdc/lgr
 
 import (
 	"net/http"

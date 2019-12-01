@@ -1,4 +1,4 @@
-package handler
+package handler // import jdel.org/acdc/handler
 
 import (
 	"encoding/gob"

@@ -1,10 +1,10 @@
-package cmd
+package cmd // import jdel.org/acdc/cmd
 
 import (
 	"fmt"
 	"runtime"
 
-	"github.com/jdel/acdc/cfg"
+	"jdel.org/acdc/cfg"
 
 	"github.com/spf13/cobra"
 )

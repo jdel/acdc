@@ -1,4 +1,4 @@
-package v1
+package v1 // import jdel.org/acdc/v1
 
 import (
 	"fmt"
@@ -9,8 +9,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jdel/acdc/api"
-	"github.com/jdel/acdc/cfg"
+	"jdel.org/acdc/api"
+	"jdel.org/acdc/cfg"
 )
 
 // RouteHookCreate uploads compose file to hookName.yml

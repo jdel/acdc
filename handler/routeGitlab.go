@@ -1,4 +1,4 @@
-package handler
+package handler // import jdel.org/acdc/handler
 
 import (
 	"encoding/json"
@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jdel/acdc/api"
+	"jdel.org/acdc/api"
 )
 
 type gitlabPushPayload struct {

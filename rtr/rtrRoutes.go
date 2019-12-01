@@ -1,10 +1,10 @@
-package rtr
+package rtr // import jdel.org/acdc/rtr
 
 import (
 	"net/http"
 
-	"github.com/jdel/acdc/handler"
-	"github.com/jdel/acdc/handler/v1"
+	"jdel.org/acdc/handler"
+	"jdel.org/acdc/handler/v1"
 )
 
 type route struct {

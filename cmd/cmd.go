@@ -1,12 +1,12 @@
-package cmd
+package cmd // import jdel.org/acdc/cmd
 
 import (
 	"fmt"
 	"net/http"
 	"strings"
 
-	"github.com/jdel/acdc/cfg"
-	"github.com/jdel/acdc/rtr"
+	"jdel.org/acdc/cfg"
+	"jdel.org/acdc/rtr"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

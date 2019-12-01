@@ -1,4 +1,4 @@
-package stc
+package stc // import jdel.org/acdc/stc
 
 // StaticPng is the base64 encoding of a png as an example
 const StaticPng = `

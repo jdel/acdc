@@ -1,9 +1,9 @@
-package cmd
+package cmd // import jdel.org/acdc/cmd
 
 import (
 	"fmt"
 
-	"github.com/jdel/acdc/api"
+	"jdel.org/acdc/api"
 	"github.com/spf13/cobra"
 )
 

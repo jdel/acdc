@@ -1,9 +1,9 @@
-package rtr
+package rtr // import jdel.org/acdc/rtr
 
 import (
 	"net/http"
 
-	"github.com/jdel/acdc/handler"
+	"jdel.org/acdc/handler"
 )
 
 type pathPrefix struct {

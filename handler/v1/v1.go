@@ -1,4 +1,4 @@
-package v1
+package v1 // import jdel.org/acdc/v1
 
 import (
 	"encoding/gob"

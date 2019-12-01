@@ -1,4 +1,4 @@
-package util
+package util // import jdel.org/acdc/util
 
 // IsStringInSlice returns true if the strings slice sl
 // contains an element equal to s

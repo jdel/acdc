@@ -1,10 +1,10 @@
-package v1
+package v1 // import jdel.org/acdc/v1
 
 import (
 	"net/http"
 	"strings"
 
-	"github.com/jdel/acdc/api"
+	"jdel.org/acdc/api"
 )
 
 // RouteHookGet lists all hooks

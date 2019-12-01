@@ -1,4 +1,4 @@
-package util
+package util // import jdel.org/acdc/util
 
 import (
 	"os/exec"

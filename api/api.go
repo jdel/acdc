@@ -1,4 +1,4 @@
-package api
+package api // import jdel.org/acdc/api
 
 import log "github.com/sirupsen/logrus"
 

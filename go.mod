@@ -1,4 +1,4 @@
-module github.com/jdel/acdc
+module jdel.org/acdc
 
 go 1.13
 

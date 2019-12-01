@@ -1,11 +1,11 @@
-package v1
+package v1 // import jdel.org/acdc/v1
 
 import (
 	"fmt"
 	"net/http"
 
-	"github.com/jdel/acdc/api"
-	"github.com/jdel/acdc/util"
+	"jdel.org/acdc/api"
+	"jdel.org/acdc/util"
 )
 
 // RouteJobsList lists all unfinished jobs

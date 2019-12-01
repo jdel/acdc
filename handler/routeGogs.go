@@ -1,4 +1,4 @@
-package handler
+package handler // import jdel.org/acdc/handler
 
 import (
 	"crypto/hmac"
@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jdel/acdc/api"
+	"jdel.org/acdc/api"
 )
 
 type gogsPayload struct {

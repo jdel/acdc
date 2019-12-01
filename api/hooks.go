@@ -1,4 +1,4 @@
-package api
+package api // import jdel.org/acdc/api
 
 import (
 	"bytes"
@@ -10,8 +10,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/jdel/acdc/cfg"
-	"github.com/jdel/acdc/util"
+	"jdel.org/acdc/cfg"
+	"jdel.org/acdc/util"
 )
 
 // Hook represents a hook

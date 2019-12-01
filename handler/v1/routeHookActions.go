@@ -1,11 +1,11 @@
-package v1
+package v1 // import jdel.org/acdc/v1
 
 import (
 	"net/http"
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jdel/acdc/api"
+	"jdel.org/acdc/api"
 )
 
 // RouteHookActions handles docker-compose actions

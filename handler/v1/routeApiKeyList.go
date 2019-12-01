@@ -1,9 +1,9 @@
-package v1
+package v1 // import jdel.org/acdc/v1
 
 import (
 	"net/http"
 
-	"github.com/jdel/acdc/api"
+	"jdel.org/acdc/api"
 )
 
 // RouteAPIKeyList lists API keys

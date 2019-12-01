@@ -1,10 +1,10 @@
-package handler
+package handler // import jdel.org/acdc/handler
 
 import (
 	"net/http"
 	"strings"
 
-	"github.com/jdel/acdc/cfg"
+	"jdel.org/acdc/cfg"
 )
 
 // PrefixStatic serves anything under /static/

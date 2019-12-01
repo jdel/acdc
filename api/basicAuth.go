@@ -1,10 +1,10 @@
-package api
+package api // import jdel.org/acdc/api
 
 import (
 	"crypto/subtle"
 	"net/http"
 
-	"github.com/jdel/acdc/cfg"
+	"jdel.org/acdc/cfg"
 )
 
 // BasicAuth provides basic auth

@@ -1,10 +1,10 @@
-package rtr
+package rtr // import jdel.org/acdc/rtr
 
 import (
 	"strings"
 
 	"github.com/gorilla/mux"
-	"github.com/jdel/acdc/lgr"
+	"jdel.org/acdc/lgr"
 	log "github.com/sirupsen/logrus"
 )
 

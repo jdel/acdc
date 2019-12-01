@@ -1,4 +1,4 @@
-package cfg
+package cfg // import jdel.org/acdc/cfg
 
 import (
 	"encoding/base64"
@@ -10,8 +10,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/jdel/acdc/stc"
-	"github.com/jdel/acdc/util"
+	"jdel.org/acdc/stc"
+	"jdel.org/acdc/util"
 
 	"github.com/fsnotify/fsnotify"
 	log "github.com/sirupsen/logrus"

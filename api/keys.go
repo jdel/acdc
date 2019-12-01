@@ -1,4 +1,4 @@
-package api
+package api // import jdel.org/acdc/api
 
 import (
 	"io/ioutil"
@@ -6,8 +6,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/jdel/acdc/cfg"
-	"github.com/jdel/acdc/util"
+	"jdel.org/acdc/cfg"
+	"jdel.org/acdc/util"
 	log "github.com/sirupsen/logrus"
 	git "gopkg.in/src-d/go-git.v4"
 )
