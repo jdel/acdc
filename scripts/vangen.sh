@@ -26,6 +26,6 @@ vangen -config vangen.json -out html
 cd html
 git add "$prefix"
 git commit -m "Vangen update for $domain/$prefix" || true
-git --git-dir html/.git push
+git push
 cd ..
 rm -rf html vangen.json

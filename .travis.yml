@@ -27,7 +27,7 @@ script:
   windows/amd64 windows/386" -output="out/{{.Dir}}-{{.OS}}-{{.Arch}}" -ldflags "-s
   -w -X jdel.org/acdc/cfg.Version=${TRAVIS_BRANCH}"
 after_success:
-- test-reporter after-build --coverage-input-type gocov --exit-code ${TRAVIS_TEST_RESULT}
+- test-reporter after-build --coverage-input-type gocov --prefix jdel.org/acdc --exit-code ${TRAVIS_TEST_RESULT}
 deploy:
 - provider: script
   skip_cleanup: true
