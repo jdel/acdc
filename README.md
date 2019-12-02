@@ -1,5 +1,7 @@
 # ACDC: A Continuous Docker Compose
 
+:warning: From this date (02 Dec 2019) onwards, this package enforces canonical imports with `jdel.org/acdc`. 
+
 ## Goal
 
 acdc aims at creating a way to use docker-compose as a lightweight continuous deployment endpoint.
@@ -27,7 +29,11 @@ acdc introduces a few concepts that I will describe here for clarity:
 
 ## Binaries
 
-Nightly builds from master are available on [B2]:
+Tagged builds are available in the [Releases](https://github.com/jdel/acdc/releases) page.
+
+Unless you absolutely need a patch that has not been released yet, you should stick to tagged builds.
+
+Latest builds from master are available on [B2]:
 
   - [acdc-darwin-386](https://f002.backblazeb2.com/file/jdel-builds/acdc/master/acdc-darwin-386)
   - [acdc-darwin-amd64](https://f002.backblazeb2.com/file/jdel-builds/acdc/master/acdc-darwin-amd64)
@@ -38,9 +44,13 @@ Nightly builds from master are available on [B2]:
   - [acdc-windows-386.exe](https://f002.backblazeb2.com/file/jdel-builds/acdc/master/acdc-windows-386.exe)
   - [acdc-windows-amd64.exe](https://f002.backblazeb2.com/file/jdel-builds/acdc/master/acdc-windows-amd64.exe)
 
-Tagged builds are available in the [Releases](https://github.com/jdel/acdc/releases) page.
+## Go get
 
-Unless you absolutely need a patch that has not been released yet, you should stick to tagged builds.
+Simply get the latest version with
+
+```bash
+go get jdel.org/acdc
+```
 
 ## Build from source
 
@@ -49,6 +59,7 @@ You will require go 1.11+ with `GO111MODULE=on` or go 1.13 to handle dependencie
 ```bash
 git clone https://github.com/jdel/acdc.git
 cd acdc
+go get ./...
 go test ./...
 go build
 ```
